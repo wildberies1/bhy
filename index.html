@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Автоматизированная регистратура больницы v6.0">
-  <title>🏥 Регистратура Pro | v6.0</title>
+  <meta name="description" content="Автоматизированная регистратура больницы v7.0 Premium">
+  <title>🏥 Регистратура Pro | v7.0 Premium</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     :root {
@@ -14,9 +14,13 @@
       --radius: 0.5rem; --shadow: 0 0.5rem 1rem rgba(0,0,0,0.08); --trans: 0.2s ease;
       --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
+    [data-theme="dark"] {
+      --bg: #1a1a2e; --card: #16213e; --border: #0f3460; --text: #e8e8e8; --muted: #a0a0a0;
+      --light: #16213e;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; scroll-behavior: smooth; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; transition: var(--trans); }
     a { color: var(--primary); text-decoration: none; transition: var(--trans); }
     button, input, select, textarea { font-family: inherit; font-size: 1rem; }
     
@@ -25,20 +29,27 @@
     .nav { margin-left: auto; display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .nav-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.4rem 0.8rem; border-radius: var(--radius); cursor: pointer; transition: var(--trans); font-weight: 500; white-space: nowrap; }
     .nav-btn:hover, .nav-btn.active { background: #fff; color: #667eea; }
+    .header-actions { display: flex; gap: 0.5rem; margin-left: 1rem; }
+    .icon-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--trans); display: flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
     
-    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; flex: 1; width: 100%; }
-    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; flex: 1; width: 100%; }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); transition: var(--trans); }
+    .card:hover { box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.12); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
     .card-title { font-size: 1.2rem; font-weight: 600; margin: 0; }
     
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
     .form-group { margin-bottom: 1rem; }
-    .form-label { display: block; margin-bottom: 0.35rem; font-weight: 500; color: #495057; font-size: 0.9rem; }
-    .form-control { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); transition: var(--trans); background: #fff; }
+    .form-label { display: block; margin-bottom: 0.35rem; font-weight: 500; color: var(--muted); font-size: 0.9rem; }
+    .form-control { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); transition: var(--trans); background: var(--card); color: var(--text); }
     .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25); }
     .form-control.is-invalid { border-color: var(--danger); }
+    .form-control:disabled { background: var(--light); opacity: 0.7; cursor: not-allowed; }
     .invalid-feedback { color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem; display: none; }
     .form-control.is-invalid ~ .invalid-feedback { display: block; }
+    textarea.form-control { resize: vertical; min-height: 100px; }
     
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1rem; border: 1px solid transparent; border-radius: var(--radius); cursor: pointer; transition: var(--trans); font-weight: 500; background: transparent; }
     .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
@@ -47,15 +58,18 @@
     .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; border: none; }
     .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: #fff; border: none; }
     .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; border: none; }
-    .btn-outline { border-color: var(--border); color: var(--text); background: #fff; }
+    .btn-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; border: none; }
+    .btn-outline { border-color: var(--border); color: var(--text); background: var(--card); }
     .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.85rem; }
+    .btn-lg { padding: 0.75rem 1.5rem; font-size: 1.1rem; }
     .btn-block { width: 100%; }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
     th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; position: sticky; top: 0; }
-    tr:hover { background: #f1f3f5; }
+    tr:hover { background: var(--light); }
     .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     
     .badge { padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 600; border-radius: 50rem; background: #e9ecef; color: #495057; display: inline-block; }
@@ -63,60 +77,94 @@
     .badge-completed { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
     .badge-cancelled { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
     .badge-no-show { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+    .badge-slot-booked { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; opacity: 0.5; }
     
     .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
-    .toast { background: #fff; border-left: 4px solid var(--primary); padding: 0.8rem 1rem; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 280px; max-width: 350px; animation: slideIn 0.3s ease; pointer-events: auto; }
+    .toast { background: var(--card); border-left: 4px solid var(--primary); padding: 0.8rem 1rem; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 280px; max-width: 350px; animation: slideIn 0.3s ease; pointer-events: auto; border: 1px solid var(--border); }
     .toast-success { border-left-color: var(--success); }
     .toast-error { border-left-color: var(--danger); }
     .toast-warning { border-left-color: var(--warning); }
+    .toast-info { border-left-color: var(--info); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     .toast-header { font-weight: 600; margin-bottom: 0.25rem; display: flex; justify-content: space-between; }
-    .toast-close { cursor: pointer; opacity: 0.6; background: none; border: none; font-size: 1.1rem; }
+    .toast-close { cursor: pointer; opacity: 0.6; background: none; border: none; font-size: 1.1rem; color: var(--text); }
     
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--trans); z-index: 2000; backdrop-filter: blur(4px); }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--trans); z-index: 2000; backdrop-filter: blur(4px); padding: 1rem; }
     .modal.active { opacity: 1; visibility: visible; }
-    .modal-content { background: #fff; border-radius: var(--radius); width: 95%; max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transform: scale(0.95); transition: var(--trans); }
+    .modal-content { background: var(--card); border-radius: var(--radius); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.95); transition: var(--trans); border: 1px solid var(--border); }
     .modal.active .modal-content { transform: scale(1); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-    .modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--muted); transition: var(--trans); }
-    .modal-close:hover { color: var(--danger); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--muted); transition: var(--trans); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .modal-close:hover { background: var(--light); color: var(--danger); }
     
     .hidden { display: none !important; }
     .text-center { text-align: center; } .muted { color: var(--muted); }
-    .d-flex { display: flex; } .gap-2 { gap: 0.5rem; } .align-center { align-items: center; } .justify-between { justify-content: space-between; }
-    .mt-3 { margin-top: 1rem; } .mb-3 { margin-bottom: 1rem; }
-    .empty { padding: 2rem; text-align: center; color: var(--muted); background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: var(--radius); }
+    .d-flex { display: flex; } .gap-2 { gap: 0.5rem; } .align-center { align-items: center; } .justify-between { justify-content: space-between; } .flex-wrap { flex-wrap: wrap; }
+    .mt-2 { margin-top: 0.5rem; } .mt-3 { margin-top: 1rem; } .mb-3 { margin-bottom: 1rem; }
+    .empty { padding: 3rem; text-align: center; color: var(--muted); background: linear-gradient(135deg, var(--light) 0%, var(--card) 100%); border-radius: var(--radius); border: 2px dashed var(--border); }
     .spinner { width: 1rem; height: 1rem; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .log-box { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: var(--radius); font-family: monospace; font-size: 0.8rem; max-height: 250px; overflow: auto; white-space: pre-wrap; }
     
     .timeline { border-left: 3px solid var(--primary); padding-left: 1.5rem; margin: 1rem 0; position: relative; }
-    .timeline-item { background: #f8f9fa; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; position: relative; }
-    .timeline-item::before { content: ''; position: absolute; left: -1.65rem; top: 1.25rem; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid #fff; }
+    .timeline-item { background: var(--light); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; position: relative; border: 1px solid var(--border); }
+    .timeline-item::before { content: ''; position: absolute; left: -1.65rem; top: 1.25rem; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--card); }
     .timeline-date { font-weight: 600; color: var(--primary); margin-bottom: 0.25rem; }
-    .email-log { background: #e8f4fd; padding: 0.75rem; border-radius: var(--radius); margin-bottom: 0.5rem; border-left: 3px solid var(--info); }
+    .email-log { background: var(--light); padding: 0.75rem; border-radius: var(--radius); margin-bottom: 0.5rem; border-left: 3px solid var(--info); }
+    
+    .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
+    .slot-btn { padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; transition: var(--trans); font-size: 0.9rem; text-align: center; }
+    .slot-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--light); transform: scale(1.05); }
+    .slot-btn:disabled { opacity: 0.4; cursor: not-allowed; background: var(--light); }
+    .slot-btn.selected { border-color: var(--success); background: var(--success); color: white; }
+    .slot-btn.booked { border-color: var(--danger); background: var(--danger); color: white; opacity: 0.6; }
+    
+    .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1.5rem; border-radius: var(--radius); text-align: center; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); }
+    .stat-card.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .stat-card.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-card.danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+    .stat-card.warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-value { font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; position: relative; }
+    .stat-label { font-size: 0.9rem; opacity: 0.9; position: relative; }
+    
+    .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .quick-action-btn { padding: 1.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; transition: var(--trans); text-align: center; }
+    .quick-action-btn:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .quick-action-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    
+    .notification-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+    
+    .print-area { background: white; color: black; padding: 2rem; }
+    @media print {
+      .header, .nav, .btn, .toast-container, .modal, .no-print { display: none !important; }
+      body { background: white; color: black; }
+      .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+      .print-area { background: white; padding: 0; }
+    }
     
     @media (max-width: 768px) {
       .nav { width: 100%; justify-content: center; overflow-x: auto; padding: 0.5rem 0; }
-      .grid-2 { grid-template-columns: 1fr; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
       th, td { padding: 0.5rem; font-size: 0.8rem; }
       .modal-content { padding: 1rem; }
       .actions { flex-direction: column; }
-    }
-    @media print {
-      .header, .nav, .btn, .toast-container, .modal { display: none !important; }
-      body { background: #fff; color: #000; }
-      .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+      .slot-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="brand">🏥 Регистратура Pro</div>
+    <div class="header-actions">
+      <button class="icon-btn" id="theme-toggle" title="Сменить тему">🌓</button>
+      <button class="icon-btn" id="notifications-btn" title="Уведомления">🔔</button>
+    </div>
     <nav class="nav">
       <button class="nav-btn active" data-tab="patients">👤 Пациенты</button>
       <button class="nav-btn" data-tab="appointments">📅 Записи</button>
       <button class="nav-btn" data-tab="records">📂 Медкарты</button>
+      <button class="nav-btn" data-tab="messages">✉️ Сообщения</button>
       <button class="nav-btn" data-tab="dashboard">📊 Статистика</button>
       <button class="nav-btn" data-tab="settings">⚙️ Настройки</button>
     </nav>
@@ -137,16 +185,19 @@
             <div class="form-group"><label class="form-label">Полис ОМС</label><input type="text" id="p-policy" class="form-control"><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Адрес</label><input type="text" id="p-addr" class="form-control"><div class="invalid-feedback"></div></div>
           </div>
-          <div class="d-flex justify-between align-center mt-3">
+          <div class="d-flex justify-between align-center mt-3 flex-wrap gap-2">
             <button type="reset" class="btn btn-outline">🔄 Сбросить</button>
             <button type="submit" class="btn btn-primary btn-lg" id="btn-save-p">💾 Зарегистрировать</button>
           </div>
         </form>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">👥 Список пациентов</h3><button class="btn btn-outline btn-sm" id="btn-export-p">📤 CSV</button></div>
-        <input type="text" id="search-p" class="form-control mb-3" placeholder="🔍 Поиск по ФИО, телефону...">
-        <div class="table-wrap"><table id="table-p"><thead><tr><th>ID</th><th>ФИО</th><th>Телефон</th><th>Email</th><th>Действия</th></tr></thead><tbody id="tbody-p"></tbody></table></div>
+        <div class="card-header"><h3 class="card-title">👥 Список пациентов</h3><div class="d-flex gap-2"><button class="btn btn-outline btn-sm" id="btn-export-p">📤 CSV</button><button class="btn btn-info btn-sm" id="btn-print-all">🖨 Печать всех</button></div></div>
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+          <input type="text" id="search-p" class="form-control" placeholder="🔍 Поиск по ФИО, телефону, полису..." style="flex:1; min-width:200px;">
+          <select id="sort-p" class="form-control" style="width:auto;"><option value="created_desc">Сначала новые</option><option value="name_asc">По имени А-Я</option><option value="birth_asc">По возрасту</option></select>
+        </div>
+        <div class="table-wrap"><table id="table-p"><thead><tr><th>ID</th><th>Медкарта</th><th>ФИО</th><th>Телефон</th><th>Email</th><th>Действия</th></tr></thead><tbody id="tbody-p"></tbody></table></div>
         <div id="empty-p" class="empty hidden">Пациенты не найдены</div>
       </div>
     </section>
@@ -159,10 +210,15 @@
             <div class="form-group"><label class="form-label">Пациент *</label><select id="a-patient" class="form-control" required><option value="">-- Выберите --</option></select><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Врач / Кабинет *</label><select id="a-doctor" class="form-control" required><option value="">-- Выберите --</option></select><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Дата *</label><input type="date" id="a-date" class="form-control" required><div class="invalid-feedback"></div></div>
-            <div class="form-group"><label class="form-label">Время *</label><select id="a-time" class="form-control" required><option value="">-- Слот --</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option></select><div class="invalid-feedback"></div></div>
+            <div class="form-group">
+              <label class="form-label">Время * (доступные слоты)</label>
+              <div id="time-slots" class="slot-grid"></div>
+              <input type="hidden" id="a-time" required>
+              <div class="invalid-feedback" id="err-a-time"></div>
+            </div>
           </div>
           <div class="form-group"><label class="form-label">Причина обращения</label><textarea id="a-reason" class="form-control" rows="2" placeholder="Жалобы, направление..."></textarea></div>
-          <div class="d-flex justify-between align-center mt-3">
+          <div class="d-flex justify-between align-center mt-3 flex-wrap gap-2">
             <button type="button" class="btn btn-outline" id="btn-clear-a">🔄 Очистить</button>
             <button type="submit" class="btn btn-success btn-lg" id="btn-save-a">✉️ Записать и отправить Email</button>
           </div>
@@ -192,20 +248,59 @@
       </div>
     </section>
 
-    <section id="tab-dashboard" class="hidden">
+    <section id="tab-messages" class="hidden">
       <div class="card">
-        <div class="grid-2 mb-3">
-          <div class="card text-center"><div class="muted">Пациентов</div><div id="stat-p" style="font-size:2rem; font-weight:700; color:var(--primary)">0</div></div>
-          <div class="card text-center"><div class="muted">Активных</div><div id="stat-s" style="font-size:2rem; font-weight:700; color:var(--success)">0</div></div>
-          <div class="card text-center"><div class="muted">Проведено</div><div id="stat-c" style="font-size:2rem; font-weight:700; color:var(--info)">0</div></div>
-          <div class="card text-center"><div class="muted">Отменено</div><div id="stat-x" style="font-size:2rem; font-weight:700; color:var(--danger)">0</div></div>
+        <div class="card-header"><h2 class="card-title">✉️ Отправка сообщений пациентам</h2></div>
+        <form id="message-form">
+          <div class="form-group">
+            <label class="form-label">Получатель *</label>
+            <select id="msg-patient" class="form-control" required><option value="">-- Выберите пациента --</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Тема сообщения *</label>
+            <input type="text" id="msg-subject" class="form-control" required placeholder="Например: Напоминание о приёме">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Текст сообщения *</label>
+            <textarea id="msg-body" class="form-control" rows="6" required placeholder="Введите текст сообщения..."></textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">📤 Отправить сообщение</button>
+            <button type="button" class="btn btn-outline" id="btn-save-template">💾 Сохранить как шаблон</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">📋 Шаблоны сообщений</h3></div>
+        <div id="templates-list" class="quick-actions"></div>
+      </div>
+    </section>
+
+    <section id="tab-dashboard" class="hidden">
+      <div class="grid-3 mb-3">
+        <div class="stat-card"><div class="stat-label">👥 Всего пациентов</div><div class="stat-value" id="stat-p">0</div></div>
+        <div class="stat-card success"><div class="stat-label">📅 Активных записей</div><div class="stat-value" id="stat-s">0</div></div>
+        <div class="stat-card info"><div class="stat-label">✅ Проведено</div><div class="stat-value" id="stat-c">0</div></div>
+        <div class="stat-card danger"><div class="stat-label">❌ Отменено</div><div class="stat-value" id="stat-x">0</div></div>
+        <div class="stat-card warning"><div class="stat-label">✉️ Отправлено писем</div><div class="stat-value" id="stat-emails">0</div></div>
+        <div class="stat-card"><div class="stat-label">🏥 Врачей</div><div class="stat-value" id="stat-doctors">7</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">🚀 Быстрые действия</h3></div>
+        <div class="quick-actions">
+          <div class="quick-action-btn" data-action="new-patient"><div class="quick-action-icon">👤</div><div>Новый пациент</div></div>
+          <div class="quick-action-btn" data-action="new-appointment"><div class="quick-action-icon">📅</div><div>Записать на приём</div></div>
+          <div class="quick-action-btn" data-action="send-message"><div class="quick-action-icon">✉️</div><div>Отправить сообщение</div></div>
+          <div class="quick-action-btn" data-action="print-reports"><div class="quick-action-icon">🖨</div><div>Печать отчётов</div></div>
+          <div class="quick-action-btn" data-action="backup"><div class="quick-action-icon">💾</div><div>Скачать бэкап</div></div>
+          <div class="quick-action-btn" data-action="settings"><div class="quick-action-icon">⚙️</div><div>Настройки</div></div>
         </div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="btn btn-outline" id="btn-download-backup">💾 Бэкап JSON</button>
-          <button class="btn btn-outline" id="btn-restore-trigger">📂 Восстановить</button>
-          <input type="file" id="input-restore" accept=".json" class="hidden">
-          <button class="btn btn-danger" id="btn-wipe">🗑 Очистить базу</button>
-        </div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap mt-3">
+        <button class="btn btn-outline" id="btn-download-backup">💾 Бэкап JSON</button>
+        <button class="btn btn-outline" id="btn-restore-trigger">📂 Восстановить</button>
+        <input type="file" id="input-restore" accept=".json" class="hidden">
+        <button class="btn btn-danger" id="btn-wipe">🗑 Очистить базу</button>
       </div>
     </section>
 
@@ -218,7 +313,7 @@
           <div class="form-group"><label class="form-label">Template ID</label><input type="text" class="form-control" value="template_joc2wh9" readonly></div>
           <div class="form-group"><label class="form-label">Feedback Template ID</label><input type="text" id="feedback-tpl" class="form-control" value="template_feedback_v1"></div>
         </div>
-        <div class="mt-3 d-flex gap-2 align-center">
+        <div class="mt-3 d-flex gap-2 align-center flex-wrap">
           <button class="btn btn-primary" id="btn-test-email">📧 Тест EmailJS</button>
           <span id="email-status" class="muted">Ожидание...</span>
         </div>
@@ -237,6 +332,20 @@
         <button class="modal-close" id="record-modal-close">&times;</button>
       </div>
       <div id="record-modal-body"></div>
+      <div class="d-flex gap-2 mt-3 no-print">
+        <button class="btn btn-primary" id="btn-print-record">🖨 Печать медкарты</button>
+        <button class="btn btn-success" id="btn-email-record">✉️ Отправить на email</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="message-modal">
+    <div class="modal-content" style="max-width:600px;">
+      <div class="modal-header">
+        <h3>📧 Отправка сообщения</h3>
+        <button class="modal-close" onclick="$('#message-modal').classList.remove('active')">&times;</button>
+      </div>
+      <div id="message-modal-body"></div>
     </div>
   </div>
 
@@ -245,8 +354,9 @@
   <script>
     const CFG = {
       EMAILJS: { pub: 'C-TWjq5k1zdkhB8Vb', svc: 'service_s3bf4xi', tpl: 'template_joc2wh9', feedbackTpl: 'template_feedback_v1' },
-      STORAGE: { p: 'hr_v6_patients', a: 'hr_v6_appts', c: 'hr_v6_count', logs: 'hr_v6_emaillogs' },
-      LOG_MAX: 80
+      STORAGE: { p: 'hr_v7_patients', a: 'hr_v7_appts', c: 'hr_v7_count', logs: 'hr_v7_emaillogs', msgs: 'hr_v7_messages', templates: 'hr_v7_templates' },
+      LOG_MAX: 100,
+      TIME_SLOTS: ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','14:00','14:30','15:00','15:30','16:00','16:30']
     };
 
     const DOCTORS = [
@@ -263,9 +373,13 @@
       patients: [],
       appts: [],
       emailLogs: [],
+      messages: [],
+      templates: [],
       count: { p: 1000, a: 5000 },
-      filters: { search: '', status: 'all', date: '' },
-      logs: []
+      filters: { search: '', status: 'all', date: '', sort: 'created_desc' },
+      logs: [],
+      currentRecord: null,
+      notifications: []
     };
 
     const $ = s => document.querySelector(s);
@@ -286,6 +400,8 @@
           state.patients = JSON.parse(localStorage.getItem(CFG.STORAGE.p) || '[]');
           state.appts = JSON.parse(localStorage.getItem(CFG.STORAGE.a) || '[]');
           state.emailLogs = JSON.parse(localStorage.getItem(CFG.STORAGE.logs) || '[]');
+          state.messages = JSON.parse(localStorage.getItem(CFG.STORAGE.msgs) || '[]');
+          state.templates = JSON.parse(localStorage.getItem(CFG.STORAGE.templates) || '[]');
           const c = JSON.parse(localStorage.getItem(CFG.STORAGE.c) || '{}');
           if(c.p) state.count.p = c.p; if(c.a) state.count.a = c.a;
           log('✅ Данные загружены из хранилища');
@@ -296,6 +412,8 @@
           localStorage.setItem(CFG.STORAGE.p, JSON.stringify(state.patients));
           localStorage.setItem(CFG.STORAGE.a, JSON.stringify(state.appts));
           localStorage.setItem(CFG.STORAGE.logs, JSON.stringify(state.emailLogs));
+          localStorage.setItem(CFG.STORAGE.msgs, JSON.stringify(state.messages));
+          localStorage.setItem(CFG.STORAGE.templates, JSON.stringify(state.templates));
           localStorage.setItem(CFG.STORAGE.c, JSON.stringify(state.count));
         } catch(e) { log('❌ Ошибка сохранения: ' + e.message, 'error'); UI.toast('Не удалось сохранить данные', 'error'); }
       }
@@ -315,19 +433,22 @@
       toast(msg, type='info') {
         const box=$('#toast-area'), t=document.createElement('div');
         t.className=`toast toast-${type}`;
-        t.innerHTML=`<div class="toast-header"><span>${type==='success'?'✅':type==='error'?'❌':'️'} Уведомление</span><button class="toast-close">&times;</button></div><div>${esc(msg)}</div>`;
+        t.innerHTML=`<div class="toast-header"><span>${type==='success'?'✅':type==='error'?'❌':type==='warning'?'⚠️':'ℹ️'} Уведомление</span><button class="toast-close">&times;</button></div><div>${esc(msg)}</div>`;
         box.appendChild(t); t.querySelector('.toast-close').onclick=()=>t.remove();
         setTimeout(()=>{if(t.parentElement)t.remove();},5000);
       },
       renderPatients() {
         const tbody=$('#tbody-p'); tbody.innerHTML='';
         let list=[...state.patients];
-        if(state.filters.search){const q=state.filters.search.toLowerCase(); list=list.filter(p=>`${p.last}${p.first}${p.mid}${p.phone}`.toLowerCase().includes(q));}
+        if(state.filters.search){const q=state.filters.search.toLowerCase(); list=list.filter(p=>`${p.last}${p.first}${p.mid}${p.phone}${p.policy}`.toLowerCase().includes(q));}
+        if(state.filters.sort==='name_asc') list.sort((a,b)=>`${a.last}${a.first}`.localeCompare(`${b.last}${b.first}`));
+        else if(state.filters.sort==='birth_asc') list.sort((a,b)=>a.birth.localeCompare(b.birth));
+        else list.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
         if(!list.length){$('#table-p').parentElement.classList.add('hidden');$('#empty-p').classList.remove('hidden');return;}
         $('#table-p').parentElement.classList.remove('hidden');$('#empty-p').classList.add('hidden');
         list.forEach(p=>{
           const tr=document.createElement('tr');
-          tr.innerHTML=`<td>${p.id}</td><td>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</td><td><a href="tel:${esc(p.phone)}">${esc(p.phone)}</a></td><td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td><td class="actions"><button class="btn btn-sm btn-outline" data-action="view-record" data-id="${p.id}">📂 Карта</button><button class="btn btn-sm btn-danger" data-action="del-p" data-id="${p.id}">🗑</button></td>`;
+          tr.innerHTML=`<td>${p.id}</td><td><span class="badge badge-scheduled">${esc(p.medicalRecordId)}</span></td><td>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</td><td><a href="tel:${esc(p.phone)}">${esc(p.phone)}</a></td><td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td><td class="actions"><button class="btn btn-sm btn-outline" data-action="view-record" data-id="${p.id}">📂 Карта</button><button class="btn btn-sm btn-info" data-action="message-patient" data-id="${p.id}">✉️</button><button class="btn btn-sm btn-danger" data-action="del-p" data-id="${p.id}">🗑</button></td>`;
           tbody.appendChild(tr);
         });
       },
@@ -367,35 +488,67 @@
           tbody.appendChild(tr);
         });
       },
+      renderTimeSlots() {
+        const doctor=$('#a-doctor').value;
+        const date=$('#a-date').value;
+        const container=$('#time-slots');
+        const selectedTime=$('#a-time');
+        container.innerHTML='';
+        if(!doctor || !date) { container.innerHTML='<p class="muted">Выберите врача и дату</p>'; return; }
+        const bookedSlots=state.appts.filter(a=>a.doctor===doctor && a.date===date && a.status!=='cancelled').map(a=>a.time);
+        CFG.TIME_SLOTS.forEach(slot=>{
+          const btn=document.createElement('button');
+          btn.type='button';
+          btn.className='slot-btn';
+          btn.textContent=slot;
+          if(bookedSlots.includes(slot)) {
+            btn.disabled=true;
+            btn.classList.add('booked');
+            btn.title='Уже занято';
+          } else {
+            btn.onclick=()=>{
+              $$('.slot-btn').forEach(b=>b.classList.remove('selected'));
+              btn.classList.add('selected');
+              selectedTime.value=slot;
+              clearErr('#a-time');
+            };
+          }
+          container.appendChild(btn);
+        });
+      },
       openMedicalRecord(patientId) {
         const p=state.patients.find(x=>x.id===patientId); if(!p) return;
+        state.currentRecord=p;
         const appts=state.appts.filter(a=>a.patientId===patientId).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
         const logs=state.emailLogs.filter(l=>l.patientId===patientId);
         let html=`
-          <div class="grid-2 mb-3">
-            <div><strong>ФИО:</strong> ${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</div>
-            <div><strong>Номер карты:</strong> <span class="badge badge-scheduled">${esc(p.medicalRecordId)}</span></div>
-            <div><strong>Дата рождения:</strong> ${p.birth}</div>
-            <div><strong>Телефон:</strong> ${esc(p.phone)}</div>
-            <div><strong>Email:</strong> ${esc(p.email)}</div>
-            <div><strong>Полис:</strong> ${esc(p.policy||'—')}</div>
+          <div class="print-area">
+            <div class="text-center mb-3"><h2>🏥 МЕДИЦИНСКАЯ КАРТА</h2><p class="muted">Номер: ${esc(p.medicalRecordId)}</p></div>
+            <div class="grid-2 mb-3">
+              <div><strong>ФИО:</strong> ${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</div>
+              <div><strong>Дата рождения:</strong> ${p.birth}</div>
+              <div><strong>Телефон:</strong> ${esc(p.phone)}</div>
+              <div><strong>Email:</strong> ${esc(p.email)}</div>
+              <div><strong>Полис:</strong> ${esc(p.policy||'—')}</div>
+              <div><strong>Адрес:</strong> ${esc(p.addr||'—')}</div>
+            </div>
+            <h4>📅 История записей (${appts.length})</h4>
+            <div class="timeline">
+              ${appts.length ? appts.map(a=>`
+                <div class="timeline-item">
+                  <div class="timeline-date">${a.date} ${a.time}</div>
+                  <div><strong>Врач:</strong> ${esc(a.doctor)}</div>
+                  <div><strong>Статус:</strong> <span class="badge badge-${a.status==='scheduled'?'scheduled':a.status==='completed'?'completed':a.status==='cancelled'?'cancelled':'no-show'}">${a.status==='scheduled'?'Запланировано':a.status==='completed'?'Проведено':a.status==='cancelled'?'Отменено':'Не явился'}</span></div>
+                  <div><strong>Причина:</strong> ${esc(a.reason||'—')}</div>
+                </div>`).join('') : '<p class="muted">Записей нет</p>'}
+            </div>
+            <h4 class="mt-3">✉️ Журнал уведомлений (${logs.length})</h4>
+            ${logs.length ? logs.map(l=>`
+              <div class="email-log">
+                <strong>${l.type==='confirm'?'✅ Подтверждение':l.type==='feedback'?'💬 Запрос оценки':l.type==='custom'?'📧 Сообщение':'❌ Отмена'}</strong> | ${l.timestamp}<br>
+                <small>Статус: ${l.status}</small>
+              </div>`).join('') : '<p class="muted">Уведомления не отправлялись</p>'}
           </div>
-          <h4>📅 История записей (${appts.length})</h4>
-          <div class="timeline">
-            ${appts.length ? appts.map(a=>`
-              <div class="timeline-item">
-                <div class="timeline-date">${a.date} ${a.time}</div>
-                <div><strong>Врач:</strong> ${esc(a.doctor)}</div>
-                <div><strong>Статус:</strong> <span class="badge badge-${a.status==='scheduled'?'scheduled':a.status==='completed'?'completed':a.status==='cancelled'?'cancelled':'no-show'}">${a.status==='scheduled'?'Запланировано':a.status==='completed'?'Проведено':a.status==='cancelled'?'Отменено':'Не явился'}</span></div>
-                <div><strong>Причина:</strong> ${esc(a.reason||'—')}</div>
-              </div>`).join('') : '<p class="muted">Записей нет</p>'}
-          </div>
-          <h4 class="mt-3">✉️ Журнал уведомлений (${logs.length})</h4>
-          ${logs.length ? logs.map(l=>`
-            <div class="email-log">
-              <strong>${l.type==='confirm'?'✅ Подтверждение':l.type==='feedback'?'💬 Запрос оценки':'❌ Отмена'}</strong> | ${l.timestamp}<br>
-              <small>Статус: ${l.status}</small>
-            </div>`).join('') : '<p class="muted">Уведомления не отправлялись</p>'}
         `;
         $('#record-modal-title').textContent=`Медкарта: ${p.medicalRecordId}`;
         $('#record-modal-body').innerHTML=html;
@@ -411,17 +564,37 @@
         });
       },
       populatePatientSelect() {
-        const sel=$('#a-patient'); sel.innerHTML='<option value="">-- Выберите пациента --</option>';
+        const sel=$('#a-patient'); const msgSel=$('#msg-patient');
+        sel.innerHTML='<option value="">-- Выберите пациента --</option>';
+        if(msgSel) msgSel.innerHTML='<option value="">-- Выберите пациента --</option>';
         state.patients.forEach(p=>{
-          const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.last} ${p.first} | ${p.medicalRecordId}`; sel.appendChild(o);
+          const o1=document.createElement('option'); o1.value=p.id; o1.textContent=`${p.last} ${p.first} | ${p.medicalRecordId}`; sel.appendChild(o1);
+          if(msgSel) { const o2=document.createElement('option'); o2.value=p.id; o2.textContent=`${p.last} ${p.first} | ${p.email}`; msgSel.appendChild(o2); }
         });
         $('#a-date').min=today();
+      },
+      renderTemplates() {
+        const container=$('#templates-list');
+        if(!state.templates.length) { container.innerHTML='<p class="muted">Шаблоны не созданы</p>'; return; }
+        container.innerHTML='';
+        state.templates.forEach((tpl,idx)=>{
+          const btn=document.createElement('div');
+          btn.className='quick-action-btn';
+          btn.innerHTML=`<div class="quick-action-icon">📋</div><div>${esc(tpl.name)}</div>`;
+          btn.onclick=()=>{
+            $('#msg-subject').value=tpl.subject;
+            $('#msg-body').value=tpl.body;
+            UI.toast('Шаблон загружен','success');
+          };
+          container.appendChild(btn);
+        });
       },
       updateStats() {
         $('#stat-p').textContent=state.patients.length;
         $('#stat-s').textContent=state.appts.filter(a=>a.status==='scheduled').length;
         $('#stat-c').textContent=state.appts.filter(a=>a.status==='completed').length;
         $('#stat-x').textContent=state.appts.filter(a=>a.status==='cancelled').length;
+        $('#stat-emails').textContent=state.emailLogs.length;
       },
       setTab(tab) {
         state.activeTab=tab;
@@ -429,7 +602,8 @@
         $$('[id^="tab-"]').forEach(s=>s.classList.toggle('hidden',s.id!==`tab-${tab}`));
         if(tab==='appointments'){UI.renderAppointments();UI.populatePatientSelect();}
         if(tab==='records'){UI.renderRecords($('#record-search').value);}
-        if(tab==='dashboard')UI.updateStats();
+        if(tab==='dashboard'){UI.updateStats();}
+        if(tab==='messages'){UI.populatePatientSelect();UI.renderTemplates();}
       }
     };
 
@@ -461,6 +635,29 @@
           log(`❌ EmailJS ошибка: ${msg}`, 'error');
           UI.toast(`❌ Ошибка Email: ${msg}`, 'error');
           state.emailLogs.push({patientId:p.id, type, timestamp:new Date().toISOString(), status:`Failed: ${msg}`});
+          Store.save(); return false;
+        }
+      },
+      async sendCustomMessage(patientId, subject, body) {
+        const p=state.patients.find(x=>x.id===patientId);
+        if(!p||!p.email||!Valid.email(p.email.trim())) {
+          UI.toast('❌ Неверный email пациента', 'error');
+          return false;
+        }
+        const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:body, clinic_name:'Медицинская клиника', reply_email:'demid050644@gmail.com'};
+        log(`📤 Отправка сообщения на ${p.email}...`);
+        try {
+          const res=await emailjs.send(CFG.EMAILJS.svc, 'template_custom_message', params);
+          log(`✅ Сообщение отправлено (Status: ${res.status})`);
+          UI.toast('✅ Сообщение отправлено', 'success');
+          state.emailLogs.push({patientId:p.id, type:'custom', subject:subject, timestamp:new Date().toISOString(), status:`Sent: ${res.status}`});
+          state.messages.push({patientId:p.id, subject:subject, body:body, timestamp:new Date().toISOString(), status:'sent'});
+          Store.save(); return true;
+        } catch(err) {
+          const msg=err.text||err.message||'Unknown';
+          log(`❌ Ошибка отправки: ${msg}`, 'error');
+          UI.toast(`❌ Ошибка: ${msg}`, 'error');
+          state.emailLogs.push({patientId:p.id, type:'custom', subject:subject, timestamp:new Date().toISOString(), status:`Failed: ${msg}`});
           Store.save(); return false;
         }
       }
@@ -496,15 +693,29 @@
         if(!d.date||d.date<today()){setErr('#a-date','Дата не в прошлом');ok=false;}
         if(!d.time){setErr('#a-time','Выберите время');ok=false;}
         if(!ok) return;
-        if(state.appts.some(a=>a.doctor===d.doctor&&a.date===d.date&&a.time===d.time&&a.status!=='cancelled')) return UI.toast('⚠️ Врач занят','warning');
+        if(state.appts.some(a=>a.doctor===d.doctor&&a.date===d.date&&a.time===d.time&&a.status!=='cancelled')) return UI.toast('⚠️ Этот слот уже занят','warning');
         const btn=$('#btn-save-a'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Оформление...';
         const appt={id:state.count.a++,...d,status:'scheduled',createdAt:new Date().toISOString()};
-        state.appts.push(appt); Store.save(); UI.renderAppointments(); UI.populatePatientSelect();
+        state.appts.push(appt); Store.save(); UI.renderAppointments(); UI.populatePatientSelect(); UI.renderTimeSlots();
         const p=state.patients.find(x=>x.id===d.patientId);
         await EmailSvc.send(p, appt, 'confirm');
-        e.target.reset(); btn.disabled=false; btn.innerHTML='✉️ Записать и отправить Email';
+        e.target.reset(); $('#time-slots').innerHTML=''; $('#a-time').value='';
+        btn.disabled=false; btn.innerHTML='✉️ Записать и отправить Email';
         UI.toast('✅ Запись создана','success');
       } catch(err) { log('❌ Ошибка записи: '+err.message,'error'); UI.toast(' Ошибка: '+err.message,'error'); $('#btn-save-a').disabled=false; $('#btn-save-a').innerHTML='✉️ Записать и отправить Email'; }
+    };
+
+    const handleMessageSubmit = async (e) => {
+      e.preventDefault();
+      const patientId=parseInt($('#msg-patient').value);
+      const subject=$('#msg-subject').value.trim();
+      const body=$('#msg-body').value.trim();
+      if(!patientId||!subject||!body) { UI.toast('Заполните все поля','warning'); return; }
+      const btn=e.target.querySelector('button[type="submit"]');
+      btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Отправка...';
+      await EmailSvc.sendCustomMessage(patientId, subject, body);
+      btn.disabled=false; btn.textContent='📤 Отправить сообщение';
+      e.target.reset();
     };
 
     window.onerror=(msg,url,line,col,err)=>{log(`💥 Global Crash: ${msg} (Line:${line})`,'error');return false;};
@@ -517,7 +728,10 @@
       $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>UI.setTab(b.dataset.tab)));
       $('#patient-form').addEventListener('submit',handlePSubmit);
       $('#appt-form').addEventListener('submit',handleASubmit);
-      $('#btn-clear-a').addEventListener('click',()=>{$('#appt-form').reset();clearAll();});
+      $('#message-form').addEventListener('submit',handleMessageSubmit);
+      $('#btn-clear-a').addEventListener('click',()=>{$('#appt-form').reset();$('#time-slots').innerHTML='';$('#a-time').value='';clearAll();});
+      $('#a-doctor').addEventListener('change',UI.renderTimeSlots);
+      $('#a-date').addEventListener('change',UI.renderTimeSlots);
 
       document.addEventListener('click', e => {
         const btn=e.target.closest('button'); if(!btn) return;
@@ -540,17 +754,27 @@
         if(act==='cancel') {
           UI.modal('❌ Отменить запись?','Пациент получит уведомление.',async()=>{
             const appt=state.appts.find(a=>a.id===id); if(!appt) return;
-            appt.status='cancelled'; Store.save(); UI.renderAppointments(); UI.updateStats();
+            appt.status='cancelled'; Store.save(); UI.renderAppointments(); UI.updateStats(); UI.renderTimeSlots();
             const p=state.patients.find(x=>x.id===appt.patientId);
             if(p) await EmailSvc.send(p,appt,'cancel');
           });
         }
-        if(act==='view-record' || act==='open-record') {
-          UI.openMedicalRecord(id);
+        if(act==='view-record' || act==='open-record') UI.openMedicalRecord(id);
+        if(act==='message-patient') {
+          UI.setTab('messages');
+          $('#msg-patient').value=id;
+        }
+        if(act==='print-record') window.print();
+        if(act==='email-record') {
+          if(!state.currentRecord) return;
+          const subject=`Медкарта ${state.currentRecord.medicalRecordId}`;
+          const body=`Уважаемый(ая) ${state.currentRecord.last} ${state.currentRecord.first},\n\nНаправляем вашу медицинскую карту.\n\nС уважением, клиника.`;
+          EmailSvc.sendCustomMessage(state.currentRecord.id, subject, body);
         }
       });
 
       $('#search-p').addEventListener('input',e=>{state.filters.search=e.target.value;UI.renderPatients();});
+      $('#sort-p').addEventListener('change',e=>{state.filters.sort=e.target.value;UI.renderPatients();});
       $('#btn-apply-filter').addEventListener('click',()=>{state.filters.status=$('#filter-status').value;state.filters.date=$('#filter-date').value;UI.renderAppointments();});
       $('#btn-search-record').addEventListener('click',()=>UI.renderRecords($('#record-search').value));
       $('#record-search').addEventListener('keyup',e=>{if(e.key==='Enter')UI.renderRecords(e.target.value);});
@@ -558,14 +782,46 @@
       $('#record-modal').addEventListener('click',e=>{if(e.target===$('#record-modal'))e.target.classList.remove('active');});
 
       $('#btn-export-p').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');const csv='ID,Карта,Фамилия,Имя,Телефон,Email,Дата,Полис\n'+state.patients.map(p=>`${p.id},"${p.medicalRecordId}","${p.last}","${p.first}","${p.phone}","${p.email}","${p.birth}","${p.policy}"`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([`\uFEFF${csv}`],{type:'text/csv'}));a.download=`patients_${today()}.csv`;a.click();});
-      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'6.0',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
+      $('#btn-print-all').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');window.print();});
+      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'7.0',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,messages:state.messages,templates:state.templates,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
       $('#btn-restore-trigger').addEventListener('click',()=>$('#input-restore').click());
-      $('#input-restore').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);state.patients=d.patients||[];state.appts=d.appts||[];state.emailLogs=d.logs||[];if(d.count){state.count.p=d.count.p;state.count.a=d.count.a;}Store.save();UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('✅ Данные восстановлены','success');log('📂 Восстановлено из бэкапа');}catch(err){UI.toast('❌ Ошибка файла','error');log('❌ Ошибка восстановления: '+err.message,'error');}};r.readAsText(f);e.target.value='';});
-      $('#btn-wipe').addEventListener('click',()=>UI.modal('⚠️ Очистить ВСЮ базу?','Это действие НЕЛЬЗЯ отменить. Все пациенты и записи будут удалены.',()=>{localStorage.clear();state.patients=[];state.appts=[];state.emailLogs=[];state.count={p:1000,a:5000};state.logs=[];UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('🗑 База полностью очищена','warning');log('🗑 Полная очистка выполнена');}));
+      $('#input-restore').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);state.patients=d.patients||[];state.appts=d.appts||[];state.emailLogs=d.logs||[];state.messages=d.messages||[];state.templates=d.templates||[];if(d.count){state.count.p=d.count.p;state.count.a=d.count.a;}Store.save();UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('✅ Данные восстановлены','success');log('📂 Восстановлено из бэкапа');}catch(err){UI.toast('❌ Ошибка файла','error');log('❌ Ошибка восстановления: '+err.message,'error');}};r.readAsText(f);e.target.value='';});
+      $('#btn-wipe').addEventListener('click',()=>UI.modal('⚠️ Очистить ВСЮ базу?','Это действие НЕЛЬЗЯ отменить.',()=>{localStorage.clear();state.patients=[];state.appts=[];state.emailLogs=[];state.messages=[];state.templates=[];state.count={p:1000,a:5000};state.logs=[];UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('🗑 База полностью очищена','warning');log('🗑 Полная очистка выполнена');}));
 
-      $('#btn-test-email').addEventListener('click',async()=>{const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';$('#email-status').textContent='🔄 Проверка...';try{await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test User',doctor_name:'Врач Тестов',specialty:'Тестирование',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Диагностика системы',clinic_address:'Каб. 1',reply_email:'demid050644@gmail.com'});$('#email-status').textContent='✅ EmailJS работает';log('✅ Тест EmailJS пройден успешно');UI.toast('✅ EmailJS работает корректно','success');}catch(err){$('#email-status').textContent=`❌ ${(err.text||err.message)}`;log('❌ Тест провалился: '+(err.text||err.message),'error');UI.toast('❌ Проверьте настройки EmailJS','error');}finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}});
+      $('#btn-save-template').addEventListener('click',()=>{
+        const name=prompt('Введите название шаблона:');
+        if(!name) return;
+        const subject=$('#msg-subject').value.trim();
+        const body=$('#msg-body').value.trim();
+        if(!subject||!body) { UI.toast('Заполните тему и текст','warning'); return; }
+        state.templates.push({name,subject,body,createdAt:new Date().toISOString()});
+        Store.save(); UI.renderTemplates(); UI.toast('✅ Шаблон сохранён','success');
+      });
+
+      $$('.quick-action-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const action=btn.dataset.action;
+          if(action==='new-patient') UI.setTab('patients');
+          if(action==='new-appointment') UI.setTab('appointments');
+          if(action==='send-message') UI.setTab('messages');
+          if(action==='print-reports') window.print();
+          if(action==='backup') $('#btn-download-backup').click();
+          if(action==='settings') UI.setTab('settings');
+        });
+      });
+
+      $('#theme-toggle').addEventListener('click',()=>{
+        const current=document.body.getAttribute('data-theme');
+        document.body.setAttribute('data-theme',current==='dark'?'':'dark');
+        localStorage.setItem('hr_theme',current==='dark'?'':'dark');
+      });
+
+      const savedTheme=localStorage.getItem('hr_theme');
+      if(savedTheme) document.body.setAttribute('data-theme',savedTheme);
+
+      $('#btn-test-email').addEventListener('click',async()=>{const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';$('#email-status').textContent='🔄 Проверка...';try{await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test User',doctor_name:'Врач Тестов',specialty:'Тестирование',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Диагностика',clinic_address:'Каб. 1',reply_email:'demid050644@gmail.com'});$('#email-status').textContent='✅ EmailJS работает';log('✅ Тест EmailJS пройден');UI.toast('✅ EmailJS работает','success');}catch(err){$('#email-status').textContent=`❌ ${(err.text||err.message)}`;log('❌ Тест провалился: '+(err.text||err.message),'error');UI.toast('❌ Проверьте настройки','error');}finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}});
       
-      log('🚀 Приложение запущено v6.0 Medical Records');
+      log('🚀 Приложение запущено v7.0 Premium');
     });
   </script>
 </body>
