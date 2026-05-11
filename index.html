@@ -647,7 +647,7 @@
         const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:body, clinic_name:'Медицинская клиника', reply_email:'demid050644@gmail.com'};
         log(`📤 Отправка сообщения на ${p.email}...`);
         try {
-          const res=await emailjs.send(CFG.EMAILJS.svc, 'template_custom_message', params);
+          const res=await emailjs.send(CFG.EMAILJS.svc, CFG.EMAILJS.tpl, params);
           log(`✅ Сообщение отправлено (Status: ${res.status})`);
           UI.toast('✅ Сообщение отправлено', 'success');
           state.emailLogs.push({patientId:p.id, type:'custom', subject:subject, timestamp:new Date().toISOString(), status:`Sent: ${res.status}`});
