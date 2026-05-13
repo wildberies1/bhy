@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Автоматизированная регистратура больницы v8.0 Premium Plus">
-  <title>🏥 Регистратура Pro | v8.0 Premium Plus</title>
+  <meta name="description" content="Автоматизированная регистратура больницы v8.1 Fixed">
+  <title>🏥 Регистратура Pro | v8.1 Fixed</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
@@ -797,6 +797,46 @@
       }
     };
 
+    // === ИСПРАВЛЕНО: Функции генерации документов теперь в UI ===
+    const DocGen = {
+      openModal(p, type) {
+        state.currentDoc = { type, patientId: p.id, createdAt: new Date().toISOString() };
+        let html='', title='';
+        if(type==='consent') { html=UI.generateConsent(p); title='Согласие на мед. услуги'; }
+        else if(type==='act') { 
+          const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='completed').sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];
+          if(!appt) { UI.toast('❌ Нет завершённых записей для этого пациента','error'); return; }
+          html=UI.generateAct(p, appt); state.currentDoc.apptId=appt.id; title='Акт оказания услуг';
+        }
+        else if(type==='reminder') {
+          const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='scheduled').sort((a,b)=>a.date.localeCompare(b.date))[0];
+          if(!appt) { UI.toast('❌ Нет предстоящих записей','error'); return; }
+          html=UI.generateReminder(p, appt); state.currentDoc.apptId=appt.id; title='Напоминание о приёме';
+        }
+        else if(type==='thanks') { html=UI.generateThanks(p); title='Благодарственное письмо'; }
+        $('#doc-modal-title').textContent=title;
+        $('#doc-modal-body').innerHTML=html;
+        $('#doc-modal').classList.add('active');
+        setTimeout(()=>{
+          const qrId=`${type}-qr`;
+          const qrEl=document.getElementById(qrId);
+          if(qrEl) QRCode.toCanvas(qrEl, `https://clinic.local/doc/${p.medicalRecordId}/${type}/${Date.now()}`, {width:100}, err=>{if(err)console.error(err);});
+        }, 100);
+      },
+      saveToRecord() {
+        if(!state.currentDoc) return;
+        state.documents.push({...state.currentDoc, id:Date.now(), status:'saved'});
+        Store.save(); UI.renderDocuments(); UI.updateStats();
+        UI.toast('✅ Документ сохранён в медкарту','success');
+      },
+      print() { window.print(); },
+      async email(p) {
+        if(!state.currentDoc) return;
+        const html=$('#doc-modal-body').innerHTML;
+        await EmailSvc.sendDocument(p, state.currentDoc.type, html);
+      }
+    };
+
     const EmailSvc = {
       init() {
         try { emailjs.init(CFG.EMAILJS.pub); log('✅ EmailJS SDK инициализирован'); }
@@ -811,7 +851,20 @@
         }
         const cleanEmail=p.email.trim();
         const [spec, cab, room]=a.doctor.split(' | ');
-        const params={to_email:cleanEmail, to_name:`${p.last} ${p.first}`, doctor_name:cab||spec, specialty:spec, date_time:`${a.date} ${a.time}`, appointment_id:`#${a.id}`, notes:a.reason||'Стандартный приём', clinic_address:$('#clinic-addr').value||'Каб. '+room, reply_email:'demid050644@gmail.com'};
+        const clinicName=$('#clinic-name').value||'Медицинская клиника';
+        const clinicAddr=$('#clinic-addr').value||'г. Москва, ул. Медицинская, д. 15';
+        const params={
+          to_email:cleanEmail, 
+          to_name:`${p.last} ${p.first}`, 
+          doctor_name:cab||spec, 
+          specialty:spec, 
+          date_time:`${a.date} ${a.time}`, 
+          appointment_id:`#${a.id}`, 
+          notes:a.reason||'Стандартный приём', 
+          clinic_address:clinicAddr,
+          clinic_name:clinicName,
+          reply_email:'demid050644@gmail.com'
+        };
         log(`📤 Отправка ${type} на ${cleanEmail}...`);
         try {
           const tplId = type==='feedback' ? ($('#feedback-tpl').value || CFG.EMAILJS.feedbackTpl) : CFG.EMAILJS.tpl;
@@ -834,7 +887,8 @@
           return false;
         }
         const subject=`${docType} - ${p.medicalRecordId}`;
-        const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:`Документ во вложении. Тип: ${docType}. Дата: ${today()}.`, clinic_name:$('#clinic-name').value, reply_email:'demid050644@gmail.com'};
+        const clinicName=$('#clinic-name').value||'Медицинская клиника';
+        const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:`Документ во вложении. Тип: ${docType}. Дата: ${today()}.`, clinic_name:clinicName, reply_email:'demid050644@gmail.com'};
         log(`📤 Отправка документа ${docType} на ${p.email}...`);
         try {
           const res=await emailjs.send(CFG.EMAILJS.svc, CFG.EMAILJS.tpl, params);
@@ -869,9 +923,9 @@
         Store.save(); UI.renderPatients(); UI.populatePatientSelect(); e.target.reset();
         btn.disabled=false; btn.innerHTML='💾 Зарегистрировать + Печать согласия';
         UI.toast('✅ Пациент успешно добавлен','success'); log(`📝 Регистрация #${newP.id}`);
-        // Авто-генерация согласия
+        // Авто-генерация согласия - ИСПРАВЛЕНО: DocGen.openModal вместо UI.openDocModal
         setTimeout(()=>{
-          UI.openDocModal(newP, 'consent');
+          DocGen.openModal(newP, 'consent');
           UI.toast('📄 Согласие сформировано. Можно распечатать или отправить.', 'info');
         }, 500);
       } catch(err) { log('❌ Критическая ошибка: '+err.message,'error'); UI.toast('❌ Ошибка: '+err.message,'error'); $('#btn-save-p').disabled=false; $('#btn-save-p').innerHTML='💾 Зарегистрировать + Печать согласия'; }
@@ -914,47 +968,6 @@
       e.target.reset();
     };
 
-    // === НОВЫЕ ФУНКЦИИ ДЛЯ ДОКУМЕНТОВ ===
-    const DocGen = {
-      openModal(p, type) {
-        state.currentDoc = { type, patientId: p.id, createdAt: new Date().toISOString() };
-        let html='', title='';
-        if(type==='consent') { html=UI.generateConsent(p); title='Согласие на мед. услуги'; }
-        else if(type==='act') { 
-          const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='completed').sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];
-          if(!appt) { UI.toast('❌ Нет завершённых записей для этого пациента','error'); return; }
-          html=UI.generateAct(p, appt); state.currentDoc.apptId=appt.id; title='Акт оказания услуг';
-        }
-        else if(type==='reminder') {
-          const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='scheduled').sort((a,b)=>a.date.localeCompare(b.date))[0];
-          if(!appt) { UI.toast('❌ Нет предстоящих записей','error'); return; }
-          html=UI.generateReminder(p, appt); state.currentDoc.apptId=appt.id; title='Напоминание о приёме';
-        }
-        else if(type==='thanks') { html=UI.generateThanks(p); title='Благодарственное письмо'; }
-        $('#doc-modal-title').textContent=title;
-        $('#doc-modal-body').innerHTML=html;
-        $('#doc-modal').classList.add('active');
-        // Генерация QR
-        setTimeout(()=>{
-          const qrId=`${type}-qr`;
-          const qrEl=document.getElementById(qrId);
-          if(qrEl) QRCode.toCanvas(qrEl, `https://clinic.local/doc/${p.medicalRecordId}/${type}/${Date.now()}`, {width:100}, err=>{if(err)console.error(err);});
-        }, 100);
-      },
-      saveToRecord() {
-        if(!state.currentDoc) return;
-        state.documents.push({...state.currentDoc, id:Date.now(), status:'saved'});
-        Store.save(); UI.renderDocuments(); UI.updateStats();
-        UI.toast('✅ Документ сохранён в медкарту','success');
-      },
-      print() { window.print(); },
-      async email(p) {
-        if(!state.currentDoc) return;
-        const html=$('#doc-modal-body').innerHTML;
-        await EmailSvc.sendDocument(p, state.currentDoc.type, html);
-      }
-    };
-
     window.onerror=(msg,url,line,col,err)=>{log(`💥 Global Crash: ${msg} (Line:${line})`,'error');return false;};
     window.addEventListener('unhandledrejection',e=>log(`💥 Unhandled Promise: ${e.reason}`,'error'));
 
@@ -983,8 +996,8 @@
           appt.status='completed'; Store.save(); UI.renderAppointments(); UI.updateStats(); UI.toast('✅ Проведён','success');
           const p=state.patients.find(x=>x.id===appt.patientId);
           if(p && p.email) setTimeout(()=>EmailSvc.send(p, appt, 'feedback'), 1000);
-          // Авто-генерация акта
-          setTimeout(()=>{UI.openDocModal(p, 'act');}, 500);
+          // Авто-генерация акта - ИСПРАВЛЕНО
+          setTimeout(()=>{DocGen.openModal(p, 'act');}, 500);
         }
         if(act==='noshow') {
           const appt=state.appts.find(a=>a.id===id); if(!appt) return;
@@ -1010,38 +1023,38 @@
           if(!doc) return;
           const p=state.patients.find(x=>x.id===doc.patientId);
           if(!p) return;
-          UI.openDocModal(p, doc.type);
+          DocGen.openModal(p, doc.type);
           if(act==='print-doc') setTimeout(()=>DocGen.print(), 500);
         }
       });
 
-      // Документы
+      // Документы - ИСПРАВЛЕНО: DocGen.openModal
       $('#btn-generate-consent').addEventListener('click', ()=>{
         const pid=parseInt($('#doc-patient').value);
         if(!pid) return UI.toast('Выберите пациента','warning');
         const p=state.patients.find(x=>x.id===pid);
-        if(p) UI.openDocModal(p, 'consent');
+        if(p) DocGen.openModal(p, 'consent');
       });
       $('#btn-generate-act').addEventListener('click', ()=>{
         const pid=parseInt($('#doc-patient').value);
         if(!pid) return UI.toast('Выберите пациента','warning');
         const p=state.patients.find(x=>x.id===pid);
-        if(p) UI.openDocModal(p, 'act');
+        if(p) DocGen.openModal(p, 'act');
       });
       $('#btn-generate-reminder').addEventListener('click', ()=>{
         const pid=parseInt($('#doc-patient').value);
         if(!pid) return UI.toast('Выберите пациента','warning');
         const p=state.patients.find(x=>x.id===pid);
-        if(p) UI.openDocModal(p, 'reminder');
+        if(p) DocGen.openModal(p, 'reminder');
       });
       $('#btn-generate-thanks').addEventListener('click', ()=>{
         const pid=parseInt($('#doc-patient').value);
         if(!pid) return UI.toast('Выберите пациента','warning');
         const p=state.patients.find(x=>x.id===pid);
-        if(p) UI.openDocModal(p, 'thanks');
+        if(p) DocGen.openModal(p, 'thanks');
       });
       $('#doc-modal-close').addEventListener('click', ()=>$('#doc-modal').classList.remove('active'));
-      $('#doc-modal').addEventListener('click', e=>{if(e.target===$('#doc-modal'))e.target.classList.remove('active');});
+      $('#doc-modal').addEventListener('click', e=>{if(e.target===$('#doc-modal))e.target.classList.remove('active');});
       $('#btn-print-doc').addEventListener('click', DocGen.print);
       $('#btn-email-doc').addEventListener('click', async ()=>{
         const p=state.patients.find(x=>x.id===state.currentDoc?.patientId);
@@ -1055,11 +1068,11 @@
       $('#btn-search-record').addEventListener('click',()=>UI.renderRecords($('#record-search').value));
       $('#record-search').addEventListener('keyup',e=>{if(e.key==='Enter')UI.renderRecords(e.target.value);});
       $('#record-modal-close').addEventListener('click',()=>$('#record-modal').classList.remove('active'));
-      $('#record-modal').addEventListener('click',e=>{if(e.target===$('#record-modal'))e.target.classList.remove('active');});
+      $('#record-modal').addEventListener('click',e=>{if(e.target===$('#record-modal))e.target.classList.remove('active');});
 
       $('#btn-export-p').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');const csv='ID,Карта,Фамилия,Имя,Телефон,Email,Дата,Полис,Адрес\n'+state.patients.map(p=>`${p.id},"${p.medicalRecordId}","${p.last}","${p.first}","${p.phone}","${p.email}","${p.birth}","${p.policy}","${p.addr}"`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([`\uFEFF${csv}`],{type:'text/csv'}));a.download=`patients_${today()}.csv`;a.click();});
       $('#btn-print-all').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');window.print();});
-      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'8.0',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,messages:state.messages,templates:state.templates,documents:state.documents,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
+      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'8.1',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,messages:state.messages,templates:state.templates,documents:state.documents,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
       $('#btn-restore-trigger').addEventListener('click',()=>$('#input-restore').click());
       $('#input-restore').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);state.patients=d.patients||[];state.appts=d.appts||[];state.emailLogs=d.logs||[];state.messages=d.messages||[];state.templates=d.templates||[];state.documents=d.documents||[];if(d.count){state.count.p=d.count.p;state.count.a=d.count.a;}Store.save();UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('✅ Данные восстановлены','success');log('📂 Восстановлено из бэкапа');}catch(err){UI.toast('❌ Ошибка файла','error');log('❌ Ошибка восстановления: '+err.message,'error');}};r.readAsText(f);e.target.value='';});
       $('#btn-wipe').addEventListener('click',()=>UI.modal('⚠️ Очистить ВСЮ базу?','Это действие НЕЛЬЗЯ отменить.',()=>{localStorage.clear();state.patients=[];state.appts=[];state.emailLogs=[];state.messages=[];state.templates=[];state.documents=[];state.count={p:1000,a:5000};state.logs=[];UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('🗑 База полностью очищена','warning');log('🗑 Полная очистка выполнена');}));
@@ -1094,7 +1107,7 @@
       const savedTheme=localStorage.getItem('hr_theme');
       if(savedTheme) document.body.setAttribute('data-theme',savedTheme);
 
-      $('#btn-test-email').addEventListener('click',async()=>{const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';$('#email-status').textContent='🔄 Проверка...';try{await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test User',doctor_name:'Врач Тестов',specialty:'Тестирование',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Диагностика',clinic_address:$('#clinic-addr').value,reply_email:'demid050644@gmail.com'});$('#email-status').textContent='✅ EmailJS работает';log('✅ Тест EmailJS пройден');UI.toast('✅ EmailJS работает','success');}catch(err){$('#email-status').textContent=`❌ ${(err.text||err.message)}`;log('❌ Тест провалился: '+(err.text||err.message),'error');UI.toast('❌ Проверьте настройки','error');}finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}});
+      $('#btn-test-email').addEventListener('click',async()=>{const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';$('#email-status').textContent='🔄 Проверка...';try{await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test User',doctor_name:'Врач Тестов',specialty:'Тестирование',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Диагностика',clinic_address:$('#clinic-addr').value,clinic_name:$('#clinic-name').value,reply_email:'demid050644@gmail.com'});$('#email-status').textContent='✅ EmailJS работает';log('✅ Тест EmailJS пройден');UI.toast('✅ EmailJS работает','success');}catch(err){$('#email-status').textContent=`❌ ${(err.text||err.message)}`;log('❌ Тест провалился: '+(err.text||err.message),'error');UI.toast('❌ Проверьте настройки','error');}finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}});
       
       // Уведомления о днях рождения
       const checkBirthdays=()=>{
@@ -1113,7 +1126,7 @@
       };
       checkBirthdays();
       
-      log('🚀 Приложение запущено v8.0 Premium Plus');
+      log('🚀 Приложение запущено v8.1 Fixed');
     });
   </script>
 </body>
