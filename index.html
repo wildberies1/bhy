@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Автоматизированная регистратура больницы v8.1 Fixed">
-  <title>🏥 Регистратура Pro | v8.1 Fixed</title>
+  <title>🏥 Регистратура Pro | v8.2 Stable</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
@@ -13,16 +12,13 @@
       --warning: #f093fb; --info: #4facfe; --light: #f8f9fa; --dark: #212529;
       --bg: #f4f6f8; --card: #ffffff; --border: #dee2e6; --text: #212529; --muted: #6c757d;
       --radius: 0.5rem; --shadow: 0 0.5rem 1rem rgba(0,0,0,0.08); --trans: 0.2s ease;
-      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font: system-ui, -apple-system, sans-serif;
     }
     [data-theme="dark"] {
-      --bg: #1a1a2e; --card: #16213e; --border: #0f3460; --text: #e8e8e8; --muted: #a0a0a0;
-      --light: #16213e;
+      --bg: #1a1a2e; --card: #16213e; --border: #0f3460; --text: #e8e8e8; --muted: #a0a0a0; --light: #16213e;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; transition: var(--trans); }
-    a { color: var(--primary); text-decoration: none; transition: var(--trans); }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
     button, input, select, textarea { font-family: inherit; font-size: 1rem; }
     
     .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
@@ -30,32 +26,27 @@
     .nav { margin-left: auto; display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .nav-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.4rem 0.8rem; border-radius: var(--radius); cursor: pointer; transition: var(--trans); font-weight: 500; white-space: nowrap; position: relative; }
     .nav-btn:hover, .nav-btn.active { background: #fff; color: #667eea; }
-    .nav-btn .badge { position: absolute; top: -5px; right: -5px; font-size: 0.65rem; padding: 2px 6px; }
     .header-actions { display: flex; gap: 0.5rem; margin-left: 1rem; }
     .icon-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--trans); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
     .icon-btn:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
     
     .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; flex: 1; width: 100%; }
     .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); transition: var(--trans); }
-    .card:hover { box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.12); }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
     .card-title { font-size: 1.2rem; font-weight: 600; margin: 0; }
     
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
     .form-group { margin-bottom: 1rem; }
     .form-label { display: block; margin-bottom: 0.35rem; font-weight: 500; color: var(--muted); font-size: 0.9rem; }
     .form-control { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); transition: var(--trans); background: var(--card); color: var(--text); }
     .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25); }
     .form-control.is-invalid { border-color: var(--danger); }
-    .form-control:disabled { background: var(--light); opacity: 0.7; cursor: not-allowed; }
     .invalid-feedback { color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem; display: none; }
     .form-control.is-invalid ~ .invalid-feedback { display: block; }
-    textarea.form-control { resize: vertical; min-height: 100px; }
     
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1rem; border: 1px solid transparent; border-radius: var(--radius); cursor: pointer; transition: var(--trans); font-weight: 500; background: transparent; }
-    .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-    .btn:disabled { opacity: 0.65; cursor: not-allowed; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1rem; border: 1px solid transparent; border-radius: var(--radius); cursor: pointer; transition: var(--trans); font-weight: 500; background: transparent; user-select: none; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
     .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; }
     .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; border: none; }
     .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: #fff; border: none; }
@@ -64,8 +55,6 @@
     .btn-outline { border-color: var(--border); color: var(--text); background: var(--card); }
     .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.85rem; }
     .btn-lg { padding: 0.75rem 1.5rem; font-size: 1.1rem; }
-    .btn-block { width: 100%; }
-    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     
     .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
@@ -78,32 +67,27 @@
     .badge-scheduled { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
     .badge-completed { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
     .badge-cancelled { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
-    .badge-no-show { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-    .badge-slot-booked { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; opacity: 0.5; }
     .badge-doc { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: white; }
     
     .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
     .toast { background: var(--card); border-left: 4px solid var(--primary); padding: 0.8rem 1rem; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 280px; max-width: 400px; animation: slideIn 0.3s ease; pointer-events: auto; border: 1px solid var(--border); }
     .toast-success { border-left-color: var(--success); }
     .toast-error { border-left-color: var(--danger); }
-    .toast-warning { border-left-color: var(--warning); }
-    .toast-info { border-left-color: var(--info); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    .toast-header { font-weight: 600; margin-bottom: 0.25rem; display: flex; justify-content: space-between; }
-    .toast-close { cursor: pointer; opacity: 0.6; background: none; border: none; font-size: 1.1rem; color: var(--text); }
+    .toast-close { cursor: pointer; opacity: 0.6; background: none; border: none; font-size: 1.1rem; color: var(--text); float: right; }
     
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--trans); z-index: 2000; backdrop-filter: blur(4px); padding: 1rem; }
     .modal.active { opacity: 1; visibility: visible; }
-    .modal-content { background: var(--card); border-radius: var(--radius); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.95); transition: var(--trans); border: 1px solid var(--border); }
+    .modal-content { background: var(--card); border-radius: var(--radius); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.95); transition: var(--trans); border: 1px solid var(--border); position: relative; }
     .modal.active .modal-content { transform: scale(1); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
-    .modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--muted); transition: var(--trans); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .modal-close { cursor: pointer; font-size: 1.5rem; background: none; border: none; color: var(--muted); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
     .modal-close:hover { background: var(--light); color: var(--danger); }
     
     .hidden { display: none !important; }
     .text-center { text-align: center; } .muted { color: var(--muted); }
-    .d-flex { display: flex; } .gap-2 { gap: 0.5rem; } .align-center { align-items: center; } .justify-between { justify-content: space-between; } .flex-wrap { flex-wrap: wrap; }
-    .mt-2 { margin-top: 0.5rem; } .mt-3 { margin-top: 1rem; } .mb-3 { margin-bottom: 1rem; }
+    .d-flex { display: flex; } .gap-2 { gap: 0.5rem; } .align-center { align-items: center; } .justify-between { justify-content: space-between; }
+    .mt-3 { margin-top: 1rem; } .mb-3 { margin-bottom: 1rem; }
     .empty { padding: 3rem; text-align: center; color: var(--muted); background: linear-gradient(135deg, var(--light) 0%, var(--card) 100%); border-radius: var(--radius); border: 2px dashed var(--border); }
     .spinner { width: 1rem; height: 1rem; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -113,7 +97,6 @@
     .timeline-item { background: var(--light); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; position: relative; border: 1px solid var(--border); }
     .timeline-item::before { content: ''; position: absolute; left: -1.65rem; top: 1.25rem; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--card); }
     .timeline-date { font-weight: 600; color: var(--primary); margin-bottom: 0.25rem; }
-    .email-log { background: var(--light); padding: 0.75rem; border-radius: var(--radius); margin-bottom: 0.5rem; border-left: 3px solid var(--info); }
     
     .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
     .slot-btn { padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; transition: var(--trans); font-size: 0.9rem; text-align: center; }
@@ -122,14 +105,11 @@
     .slot-btn.selected { border-color: var(--success); background: var(--success); color: white; }
     .slot-btn.booked { border-color: var(--danger); background: var(--danger); color: white; opacity: 0.6; }
     
-    .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1.5rem; border-radius: var(--radius); text-align: center; position: relative; overflow: hidden; }
-    .stat-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); }
+    .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1.5rem; border-radius: var(--radius); text-align: center; }
     .stat-card.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
     .stat-card.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
     .stat-card.danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
-    .stat-card.warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .stat-value { font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; position: relative; }
-    .stat-label { font-size: 0.9rem; opacity: 0.9; position: relative; }
+    .stat-value { font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; }
     
     .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
     .quick-action-btn { padding: 1.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; transition: var(--trans); text-align: center; }
@@ -138,32 +118,20 @@
     
     .print-area { background: white; color: black; padding: 2rem; font-family: "Times New Roman", serif; line-height: 1.8; }
     .print-header { text-align: center; border-bottom: 3px double #000; padding-bottom: 1rem; margin-bottom: 1.5rem; }
-    .print-title { font-size: 1.4rem; font-weight: bold; margin: 0.5rem 0; }
-    .print-subtitle { font-size: 1.1rem; color: #333; }
-    .print-body { margin: 1.5rem 0; }
-    .print-field { margin: 0.5rem 0; }
-    .print-field strong { display: inline-block; width: 200px; }
     .print-signature { margin-top: 3rem; display: flex; justify-content: space-between; }
     .print-signature div { width: 45%; border-top: 1px solid #000; padding-top: 0.5rem; text-align: center; }
-    .print-qr { text-align: center; margin: 1rem 0; }
-    .print-qr canvas { border: 1px solid #ccc; padding: 5px; }
     
     @media print {
       .header, .nav, .btn, .toast-container, .modal, .no-print { display: none !important; }
       body { background: white; color: black; }
       .card { box-shadow: none; border: none; page-break-inside: avoid; }
       .print-area { background: white; padding: 0; font-size: 14px; }
-      .modal-content { max-width: 100%; padding: 0; }
     }
-    
     @media (max-width: 768px) {
       .nav { width: 100%; justify-content: center; overflow-x: auto; padding: 0.5rem 0; }
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
       th, td { padding: 0.5rem; font-size: 0.8rem; }
-      .modal-content { padding: 1rem; }
-      .actions { flex-direction: column; }
       .slot-grid { grid-template-columns: repeat(3, 1fr); }
-      .print-field strong { width: 150px; }
     }
   </style>
 </head>
@@ -171,7 +139,7 @@
   <header class="header">
     <div class="brand">🏥 Регистратура Pro</div>
     <div class="header-actions">
-      <button class="icon-btn" id="theme-toggle" title="Сменить тему">🌓</button>
+      <button class="icon-btn" id="theme-toggle" title="Тема">🌓</button>
       <button class="icon-btn" id="notifications-btn" title="Уведомления">🔔<span class="badge badge-danger hidden" id="notif-count">0</span></button>
     </div>
     <nav class="nav">
@@ -186,6 +154,7 @@
   </header>
 
   <main class="container">
+    <!-- PATIENTS -->
     <section id="tab-patients">
       <div class="card">
         <div class="card-header"><h2 class="card-title">Регистрация пациента</h2></div>
@@ -193,30 +162,28 @@
           <div class="grid-2">
             <div class="form-group"><label class="form-label">Фамилия *</label><input type="text" id="p-last" class="form-control" required><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Имя *</label><input type="text" id="p-first" class="form-control" required><div class="invalid-feedback"></div></div>
-            <div class="form-group"><label class="form-label">Отчество</label><input type="text" id="p-mid" class="form-control"><div class="invalid-feedback"></div></div>
+            <div class="form-group"><label class="form-label">Отчество</label><input type="text" id="p-mid" class="form-control"></div>
             <div class="form-group"><label class="form-label">Дата рождения *</label><input type="date" id="p-birth" class="form-control" required><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Телефон *</label><input type="tel" id="p-phone" class="form-control" placeholder="+79001234567" required><div class="invalid-feedback"></div></div>
             <div class="form-group"><label class="form-label">Email *</label><input type="email" id="p-email" class="form-control" required><div class="invalid-feedback"></div></div>
-            <div class="form-group"><label class="form-label">Полис ОМС</label><input type="text" id="p-policy" class="form-control"><div class="invalid-feedback"></div></div>
-            <div class="form-group"><label class="form-label">Адрес</label><input type="text" id="p-addr" class="form-control"><div class="invalid-feedback"></div></div>
+            <div class="form-group"><label class="form-label">Полис ОМС</label><input type="text" id="p-policy" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Адрес</label><input type="text" id="p-addr" class="form-control"></div>
           </div>
-          <div class="d-flex justify-between align-center mt-3 flex-wrap gap-2">
+          <div class="d-flex justify-between align-center mt-3">
             <button type="reset" class="btn btn-outline">🔄 Сбросить</button>
-            <button type="submit" class="btn btn-primary btn-lg" id="btn-save-p">💾 Зарегистрировать + Печать согласия</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-save-p">💾 Зарегистрировать + Согласие</button>
           </div>
         </form>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">👥 Список пациентов</h3><div class="d-flex gap-2"><button class="btn btn-outline btn-sm" id="btn-export-p">📤 CSV</button><button class="btn btn-info btn-sm" id="btn-print-all">🖨 Печать всех</button></div></div>
-        <div class="d-flex gap-2 mb-3 flex-wrap">
-          <input type="text" id="search-p" class="form-control" placeholder="🔍 Поиск по ФИО, телефону, полису..." style="flex:1; min-width:200px;">
-          <select id="sort-p" class="form-control" style="width:auto;"><option value="created_desc">Сначала новые</option><option value="name_asc">По имени А-Я</option><option value="birth_asc">По возрасту</option></select>
-        </div>
+        <div class="card-header"><h3 class="card-title">👥 Список пациентов</h3></div>
+        <input type="text" id="search-p" class="form-control mb-3" placeholder="🔍 Поиск...">
         <div class="table-wrap"><table id="table-p"><thead><tr><th>ID</th><th>Медкарта</th><th>ФИО</th><th>Телефон</th><th>Email</th><th>Действия</th></tr></thead><tbody id="tbody-p"></tbody></table></div>
         <div id="empty-p" class="empty hidden">Пациенты не найдены</div>
       </div>
     </section>
 
+    <!-- APPOINTMENTS -->
     <section id="tab-appointments" class="hidden">
       <div class="card">
         <div class="card-header"><h2 class="card-title">📅 Запись на приём</h2></div>
@@ -232,8 +199,8 @@
               <div class="invalid-feedback" id="err-a-time"></div>
             </div>
           </div>
-          <div class="form-group"><label class="form-label">Причина обращения</label><textarea id="a-reason" class="form-control" rows="2" placeholder="Жалобы, направление..."></textarea></div>
-          <div class="d-flex justify-between align-center mt-3 flex-wrap gap-2">
+          <div class="form-group"><label class="form-label">Причина обращения</label><textarea id="a-reason" class="form-control" rows="2"></textarea></div>
+          <div class="d-flex justify-between align-center mt-3">
             <button type="button" class="btn btn-outline" id="btn-clear-a">🔄 Очистить</button>
             <button type="submit" class="btn btn-success btn-lg" id="btn-save-a">✉️ Записать и отправить Email</button>
           </div>
@@ -241,7 +208,7 @@
       </div>
       <div class="card">
         <div class="card-header"><h3 class="card-title">📋 График записей</h3></div>
-        <div class="d-flex gap-2 mb-3 flex-wrap">
+        <div class="d-flex gap-2 mb-3">
           <select id="filter-status" class="form-control" style="width:auto;"><option value="all">Все статусы</option><option value="scheduled">Запланировано</option><option value="completed">Проведено</option><option value="cancelled">Отменено</option></select>
           <input type="date" id="filter-date" class="form-control" style="width:auto;">
           <button class="btn btn-primary btn-sm" id="btn-apply-filter">🔍 Применить</button>
@@ -251,11 +218,12 @@
       </div>
     </section>
 
+    <!-- RECORDS -->
     <section id="tab-records" class="hidden">
       <div class="card">
         <div class="card-header"><h2 class="card-title">📂 Поиск медкарт</h2></div>
         <div class="d-flex gap-2 mb-3">
-          <input type="text" id="record-search" class="form-control" placeholder="🔍 Введите номер медкарты (MR-...) или ФИО пациента...">
+          <input type="text" id="record-search" class="form-control" placeholder="🔍 Номер медкарты или ФИО...">
           <button class="btn btn-primary" id="btn-search-record">Найти</button>
         </div>
         <div class="table-wrap"><table id="table-records"><thead><tr><th>Номер медкарты</th><th>ФИО</th><th>Телефон</th><th>Дата рождения</th><th>Действия</th></tr></thead><tbody id="tbody-records"></tbody></table></div>
@@ -263,59 +231,37 @@
       </div>
     </section>
 
+    <!-- MESSAGES -->
     <section id="tab-messages" class="hidden">
       <div class="card">
-        <div class="card-header"><h2 class="card-title">✉️ Отправка сообщений пациентам</h2></div>
+        <div class="card-header"><h2 class="card-title">✉️ Отправка сообщений</h2></div>
         <form id="message-form">
-          <div class="form-group">
-            <label class="form-label">Получатель *</label>
-            <select id="msg-patient" class="form-control" required><option value="">-- Выберите пациента --</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Тема сообщения *</label>
-            <input type="text" id="msg-subject" class="form-control" required placeholder="Например: Напоминание о приёме">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Текст сообщения *</label>
-            <textarea id="msg-body" class="form-control" rows="6" required placeholder="Введите текст сообщения..."></textarea>
-          </div>
+          <div class="form-group"><label class="form-label">Получатель *</label><select id="msg-patient" class="form-control" required><option value="">-- Выберите --</option></select></div>
+          <div class="form-group"><label class="form-label">Тема *</label><input type="text" id="msg-subject" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Текст *</label><textarea id="msg-body" class="form-control" rows="6" required></textarea></div>
           <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary btn-lg">📤 Отправить сообщение</button>
-            <button type="button" class="btn btn-outline" id="btn-save-template">💾 Сохранить как шаблон</button>
+            <button type="submit" class="btn btn-primary btn-lg">📤 Отправить</button>
+            <button type="button" class="btn btn-outline" id="btn-save-template">💾 Шаблон</button>
           </div>
         </form>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">📋 Шаблоны сообщений</h3></div>
+        <div class="card-header"><h3 class="card-title">📋 Шаблоны</h3></div>
         <div id="templates-list" class="quick-actions"></div>
       </div>
     </section>
 
+    <!-- DOCUMENTS -->
     <section id="tab-documents" class="hidden">
       <div class="card">
-        <div class="card-header"><h2 class="card-title">📄 Управление документами</h2></div>
+        <div class="card-header"><h2 class="card-title">📄 Генерация документов</h2></div>
         <div class="grid-2">
-          <div class="quick-action-btn" id="btn-generate-consent">
-            <div class="quick-action-icon">📝</div>
-            <div>Согласие на мед. услуги</div>
-          </div>
-          <div class="quick-action-btn" id="btn-generate-act">
-            <div class="quick-action-icon">✅</div>
-            <div>Акт оказания услуг</div>
-          </div>
-          <div class="quick-action-btn" id="btn-generate-reminder">
-            <div class="quick-action-icon">🔔</div>
-            <div>Напоминание о приёме</div>
-          </div>
-          <div class="quick-action-btn" id="btn-generate-thanks">
-            <div class="quick-action-icon">💝</div>
-            <div>Благодарственное письмо</div>
-          </div>
+          <div class="quick-action-btn" id="btn-generate-consent"><div class="quick-action-icon">📝</div><div>Согласие</div></div>
+          <div class="quick-action-btn" id="btn-generate-act"><div class="quick-action-icon">✅</div><div>Акт услуг</div></div>
+          <div class="quick-action-btn" id="btn-generate-reminder"><div class="quick-action-icon">🔔</div><div>Напоминание</div></div>
+          <div class="quick-action-btn" id="btn-generate-thanks"><div class="quick-action-icon">💝</div><div>Благодарность</div></div>
         </div>
-        <div class="mt-3">
-          <label class="form-label">Выберите пациента для генерации документа:</label>
-          <select id="doc-patient" class="form-control"><option value="">-- Выберите --</option></select>
-        </div>
+        <div class="mt-3"><label class="form-label">Выберите пациента:</label><select id="doc-patient" class="form-control"><option value="">-- Выберите --</option></select></div>
       </div>
       <div class="card">
         <div class="card-header"><h3 class="card-title">📋 История документов</h3></div>
@@ -323,53 +269,32 @@
       </div>
     </section>
 
+    <!-- DASHBOARD -->
     <section id="tab-dashboard" class="hidden">
-      <div class="grid-3 mb-3">
-        <div class="stat-card"><div class="stat-label">👥 Всего пациентов</div><div class="stat-value" id="stat-p">0</div></div>
-        <div class="stat-card success"><div class="stat-label">📅 Активных записей</div><div class="stat-value" id="stat-s">0</div></div>
-        <div class="stat-card info"><div class="stat-label">✅ Проведено</div><div class="stat-value" id="stat-c">0</div></div>
-        <div class="stat-card danger"><div class="stat-label">❌ Отменено</div><div class="stat-value" id="stat-x">0</div></div>
-        <div class="stat-card warning"><div class="stat-label">✉️ Отправлено писем</div><div class="stat-value" id="stat-emails">0</div></div>
-        <div class="stat-card"><div class="stat-label">📄 Документов</div><div class="stat-value" id="stat-docs">0</div></div>
+      <div class="grid-2 mb-3">
+        <div class="stat-card"><div class="muted">Пациентов</div><div class="stat-value" id="stat-p">0</div></div>
+        <div class="stat-card success"><div class="muted">Активных</div><div class="stat-value" id="stat-s">0</div></div>
+        <div class="stat-card info"><div class="muted">Проведено</div><div class="stat-value" id="stat-c">0</div></div>
+        <div class="stat-card danger"><div class="muted">Отменено</div><div class="stat-value" id="stat-x">0</div></div>
       </div>
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">🚀 Быстрые действия</h3></div>
-        <div class="quick-actions">
-          <div class="quick-action-btn" data-action="new-patient"><div class="quick-action-icon">👤</div><div>Новый пациент</div></div>
-          <div class="quick-action-btn" data-action="new-appointment"><div class="quick-action-icon">📅</div><div>Записать на приём</div></div>
-          <div class="quick-action-btn" data-action="send-message"><div class="quick-action-icon">✉️</div><div>Отправить сообщение</div></div>
-          <div class="quick-action-btn" data-action="print-reports"><div class="quick-action-icon">🖨</div><div>Печать отчётов</div></div>
-          <div class="quick-action-btn" data-action="backup"><div class="quick-action-icon">💾</div><div>Скачать бэкап</div></div>
-          <div class="quick-action-btn" data-action="settings"><div class="quick-action-icon">⚙️</div><div>Настройки</div></div>
-        </div>
-      </div>
-      <div class="d-flex gap-2 flex-wrap mt-3">
-        <button class="btn btn-outline" id="btn-download-backup">💾 Бэкап JSON</button>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline" id="btn-download-backup">💾 Бэкап</button>
         <button class="btn btn-outline" id="btn-restore-trigger">📂 Восстановить</button>
         <input type="file" id="input-restore" accept=".json" class="hidden">
-        <button class="btn btn-danger" id="btn-wipe">🗑 Очистить базу</button>
+        <button class="btn btn-danger" id="btn-wipe">🗑 Очистить</button>
       </div>
     </section>
 
+    <!-- SETTINGS -->
     <section id="tab-settings" class="hidden">
       <div class="card">
-        <h2 class="card-title mb-3">⚙️ Диагностика и Настройки</h2>
+        <h2 class="card-title mb-3">⚙️ Настройки</h2>
         <div class="grid-2">
-          <div class="form-group"><label class="form-label">Public Key</label><input type="text" class="form-control" value="C-TWjq5k1zdkhB8Vb" readonly></div>
-          <div class="form-group"><label class="form-label">Service ID</label><input type="text" class="form-control" value="service_s3bf4xi" readonly></div>
-          <div class="form-group"><label class="form-label">Template ID</label><input type="text" class="form-control" value="template_joc2wh9" readonly></div>
-          <div class="form-group"><label class="form-label">Feedback Template ID</label><input type="text" id="feedback-tpl" class="form-control" value="template_feedback_v1"></div>
           <div class="form-group"><label class="form-label">Clinic Name</label><input type="text" id="clinic-name" class="form-control" value="Медицинская клиника «Здоровье»"></div>
           <div class="form-group"><label class="form-label">Clinic Address</label><input type="text" id="clinic-addr" class="form-control" value="г. Москва, ул. Медицинская, д. 15"></div>
         </div>
-        <div class="mt-3 d-flex gap-2 align-center flex-wrap">
-          <button class="btn btn-primary" id="btn-test-email">📧 Тест EmailJS</button>
-          <span id="email-status" class="muted">Ожидание...</span>
-        </div>
-        <div class="mt-3">
-          <h4 class="mb-3">📜 Журнал отладки</h4>
-          <div class="log-box" id="diag-log">// Системный журнал</div>
-        </div>
+        <div class="mt-3"><button class="btn btn-primary" id="btn-test-email">📧 Тест EmailJS</button><span id="email-status" class="muted" style="margin-left:1rem;"></span></div>
+        <div class="mt-3"><h4 class="mb-3">📜 Лог</h4><div class="log-box" id="diag-log">// Журнал</div></div>
       </div>
     </section>
   </main>
@@ -377,29 +302,23 @@
   <!-- MODALS -->
   <div class="modal" id="record-modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="record-modal-title">Медкарта пациента</h3>
-        <button class="modal-close" id="record-modal-close">&times;</button>
-      </div>
+      <div class="modal-header"><h3 id="record-modal-title">Медкарта</h3><button class="modal-close" id="record-modal-close">&times;</button></div>
       <div id="record-modal-body"></div>
       <div class="d-flex gap-2 mt-3 no-print">
-        <button class="btn btn-primary" id="btn-print-record">🖨 Печать медкарты</button>
-        <button class="btn btn-success" id="btn-email-record">✉️ Отправить на email</button>
+        <button class="btn btn-primary" id="btn-print-record">🖨 Печать</button>
+        <button class="btn btn-success" id="btn-email-record">✉️ Email</button>
       </div>
     </div>
   </div>
 
   <div class="modal" id="doc-modal">
     <div class="modal-content" style="max-width:800px;">
-      <div class="modal-header">
-        <h3 id="doc-modal-title">Генерация документа</h3>
-        <button class="modal-close" id="doc-modal-close">&times;</button>
-      </div>
+      <div class="modal-header"><h3 id="doc-modal-title">Документ</h3><button class="modal-close" id="doc-modal-close">&times;</button></div>
       <div id="doc-modal-body"></div>
       <div class="d-flex gap-2 mt-3 no-print">
         <button class="btn btn-primary" id="btn-print-doc">🖨 Печать</button>
-        <button class="btn btn-success" id="btn-email-doc">✉️ Отправить на email</button>
-        <button class="btn btn-info" id="btn-save-doc">💾 Сохранить в карту</button>
+        <button class="btn btn-success" id="btn-email-doc">✉️ Email</button>
+        <button class="btn btn-info" id="btn-save-doc">💾 В карту</button>
       </div>
     </div>
   </div>
@@ -407,18 +326,13 @@
   <div class="modal" id="thanks-modal">
     <div class="modal-content" style="max-width:500px; text-align:center;">
       <div style="font-size:4rem; margin-bottom:1rem;">💝</div>
-      <h2 style="color:var(--primary); margin-bottom:1rem;">Спасибо за доверие!</h2>
-      <p style="font-size:1.1rem; margin-bottom:1.5rem;">Вы выбрали нашу клинику, и мы ценим это. Ваше здоровье — наш главный приоритет.</p>
-      <div style="background:var(--light); padding:1rem; border-radius:var(--radius); margin-bottom:1.5rem;">
-        <p><strong>Что дальше?</strong></p>
-        <ul style="text-align:left; margin-left:1rem;">
-          <li>📧 Вам придёт подтверждение на email</li>
-          <li>📱 Напоминание за день до приёма</li>
-          <li>🏥 Придите за 10 минут до времени</li>
-          <li>⭐ После приёма оцените нас</li>
-        </ul>
-      </div>
-      <p class="muted">С заботой о вашем здоровье,<br><strong>Команда клиники</strong></p>
+      <h2 style="color:var(--primary);">Спасибо за доверие!</h2>
+      <p class="mt-3">Вы выбрали нашу клинику. Ваше здоровье — наш приоритет.</p>
+      <ul style="text-align:left; margin:1.5rem 0 1.5rem 1rem;">
+        <li>📧 Подтверждение придёт на email</li>
+        <li>🏥 Придите за 10 минут до приёма</li>
+        <li>⭐ Оцените нас после визита</li>
+      </ul>
       <button class="btn btn-primary mt-3" onclick="$('#thanks-modal').classList.remove('active')">Закрыть</button>
     </div>
   </div>
@@ -429,7 +343,6 @@
     const CFG = {
       EMAILJS: { pub: 'C-TWjq5k1zdkhB8Vb', svc: 'service_s3bf4xi', tpl: 'template_joc2wh9', feedbackTpl: 'template_feedback_v1' },
       STORAGE: { p: 'hr_v8_patients', a: 'hr_v8_appts', c: 'hr_v8_count', logs: 'hr_v8_emaillogs', msgs: 'hr_v8_messages', templates: 'hr_v8_templates', docs: 'hr_v8_documents' },
-      LOG_MAX: 100,
       TIME_SLOTS: ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','14:00','14:30','15:00','15:30','16:00','16:30']
     };
 
@@ -443,30 +356,15 @@
       { specialty: 'Офтальмолог', name: 'Москова Инга Борсовна', room: '71' }
     ];
 
-    const state = {
-      patients: [],
-      appts: [],
-      emailLogs: [],
-      messages: [],
-      templates: [],
-      documents: [],
-      count: { p: 1000, a: 5000 },
-      filters: { search: '', status: 'all', date: '', sort: 'created_desc' },
-      logs: [],
-      currentRecord: null,
-      currentDoc: null,
-      notifications: []
-    };
+    const state = { patients: [], appts: [], emailLogs: [], messages: [], templates: [], documents: [], count: { p: 1000, a: 5000 }, filters: { search: '', status: 'all', date: '' }, logs: [], currentRecord: null, currentDoc: null };
 
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
     const esc = s => String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     const today = () => new Date().toISOString().split('T')[0];
-    const fmtDate = d => new Date(d).toLocaleDateString('ru-RU');
     const log = (msg, type='info') => {
       const entry = `[${new Date().toLocaleTimeString()}] [${type.toUpperCase()}] ${msg}`;
-      state.logs.unshift(entry);
-      if(state.logs.length > CFG.LOG_MAX) state.logs.pop();
+      state.logs.unshift(entry); if(state.logs.length > 50) state.logs.pop();
       const box = $('#diag-log'); if(box) box.textContent = state.logs.join('\n');
       console[type === 'error' ? 'error' : 'log'](entry);
     };
@@ -482,8 +380,7 @@
           state.documents = JSON.parse(localStorage.getItem(CFG.STORAGE.docs) || '[]');
           const c = JSON.parse(localStorage.getItem(CFG.STORAGE.c) || '{}');
           if(c.p) state.count.p = c.p; if(c.a) state.count.a = c.a;
-          log('✅ Данные загружены из хранилища');
-        } catch(e) { log('❌ Ошибка загрузки: ' + e.message, 'error'); }
+        } catch(e) { log('Ошибка загрузки: ' + e.message, 'error'); }
       },
       save() {
         try {
@@ -494,7 +391,7 @@
           localStorage.setItem(CFG.STORAGE.templates, JSON.stringify(state.templates));
           localStorage.setItem(CFG.STORAGE.docs, JSON.stringify(state.documents));
           localStorage.setItem(CFG.STORAGE.c, JSON.stringify(state.count));
-        } catch(e) { log('❌ Ошибка сохранения: ' + e.message, 'error'); UI.toast('Не удалось сохранить данные', 'error'); }
+        } catch(e) { log('Ошибка сохранения: ' + e.message, 'error'); UI.toast('Не удалось сохранить', 'error'); }
       }
     };
 
@@ -512,17 +409,14 @@
       toast(msg, type='info') {
         const box=$('#toast-area'), t=document.createElement('div');
         t.className=`toast toast-${type}`;
-        t.innerHTML=`<div class="toast-header"><span>${type==='success'?'✅':type==='error'?'❌':type==='warning'?'⚠️':'ℹ️'} Уведомление</span><button class="toast-close">&times;</button></div><div>${esc(msg)}</div>`;
+        t.innerHTML=`<div class="toast-header"><span>${type==='success'?'✅':type==='error'?'❌':'️'} Уведомление</span><button class="toast-close">&times;</button></div><div>${esc(msg)}</div>`;
         box.appendChild(t); t.querySelector('.toast-close').onclick=()=>t.remove();
         setTimeout(()=>{if(t.parentElement)t.remove();},5000);
       },
       renderPatients() {
         const tbody=$('#tbody-p'); tbody.innerHTML='';
         let list=[...state.patients];
-        if(state.filters.search){const q=state.filters.search.toLowerCase(); list=list.filter(p=>`${p.last}${p.first}${p.mid}${p.phone}${p.policy}`.toLowerCase().includes(q));}
-        if(state.filters.sort==='name_asc') list.sort((a,b)=>`${a.last}${a.first}`.localeCompare(`${b.last}${b.first}`));
-        else if(state.filters.sort==='birth_asc') list.sort((a,b)=>a.birth.localeCompare(b.birth));
-        else list.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+        if(state.filters.search){const q=state.filters.search.toLowerCase(); list=list.filter(p=>`${p.last}${p.first}${p.mid}${p.phone}`.toLowerCase().includes(q));}
         if(!list.length){$('#table-p').parentElement.classList.add('hidden');$('#empty-p').classList.remove('hidden');return;}
         $('#table-p').parentElement.classList.remove('hidden');$('#empty-p').classList.add('hidden');
         list.forEach(p=>{
@@ -550,11 +444,11 @@
       },
       renderDocuments() {
         const tbody=$('#tbody-docs'); tbody.innerHTML='';
-        if(!state.documents.length) { tbody.innerHTML='<tr><td colspan="5" class="text-center muted">Документы не созданы</td></tr>'; return; }
+        if(!state.documents.length) { tbody.innerHTML='<tr><td colspan="5" class="text-center muted">Нет документов</td></tr>'; return; }
         state.documents.slice().reverse().forEach(doc=>{
           const p=state.patients.find(x=>x.id===doc.patientId);
           const tr=document.createElement('tr');
-          tr.innerHTML=`<td>${fmtDate(doc.createdAt)}</td><td><span class="badge badge-doc">${esc(doc.type)}</span></td><td>${p?esc(p.last+' '+p.first):'—'}</td><td>${doc.status}</td><td><button class="btn btn-sm btn-outline" data-action="view-doc" data-id="${doc.id}">👁</button><button class="btn btn-sm btn-primary" data-action="print-doc" data-id="${doc.id}">🖨</button></td>`;
+          tr.innerHTML=`<td>${new Date(doc.createdAt).toLocaleDateString()}</td><td><span class="badge badge-doc">${esc(doc.type)}</span></td><td>${p?esc(p.last+' '+p.first):'—'}</td><td>${doc.status}</td><td><button class="btn btn-sm btn-outline" data-action="view-doc" data-id="${doc.id}">👁</button><button class="btn btn-sm btn-primary" data-action="print-doc" data-id="${doc.id}">🖨</button></td>`;
           tbody.appendChild(tr);
         });
       },
@@ -574,7 +468,7 @@
           if(bookedSlots.includes(slot)) {
             btn.disabled=true;
             btn.classList.add('booked');
-            btn.title='Уже занято';
+            btn.title='Занято';
           } else {
             btn.onclick=()=>{
               $$('.slot-btn').forEach(b=>b.classList.remove('selected'));
@@ -594,10 +488,7 @@
         const docs=state.documents.filter(d=>d.patientId===patientId);
         let html=`
           <div class="print-area">
-            <div class="print-header">
-              <div style="font-size:1.5rem; font-weight:bold;">🏥 МЕДИЦИНСКАЯ КАРТА</div>
-              <div class="print-subtitle">Номер: ${esc(p.medicalRecordId)}</div>
-            </div>
+            <div class="print-header"><div style="font-size:1.5rem; font-weight:bold;">🏥 МЕДИЦИНСКАЯ КАРТА</div><div>Номер: ${esc(p.medicalRecordId)}</div></div>
             <div class="grid-2 mb-3">
               <div><strong>ФИО:</strong> ${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</div>
               <div><strong>Дата рождения:</strong> ${p.birth}</div>
@@ -616,15 +507,9 @@
                   <div><strong>Причина:</strong> ${esc(a.reason||'—')}</div>
                 </div>`).join('') : '<p class="muted">Записей нет</p>'}
             </div>
-            <h4 class="mt-3">✉️ Журнал уведомлений (${logs.length})</h4>
-            ${logs.length ? logs.map(l=>`
-              <div class="email-log">
-                <strong>${l.type==='confirm'?'✅ Подтверждение':l.type==='feedback'?'💬 Запрос оценки':l.type==='custom'?'📧 Сообщение':'❌ Отмена'}</strong> | ${l.timestamp}<br>
-                <small>Статус: ${l.status}</small>
-              </div>`).join('') : '<p class="muted">Уведомления не отправлялись</p>'}
             ${docs.length ? `<h4 class="mt-3">📄 Документы (${docs.length})</h4>`+docs.map(d=>`
-              <div class="email-log">
-                <strong>${esc(d.type)}</strong> | ${fmtDate(d.createdAt)}<br>
+              <div class="timeline-item">
+                <strong>${esc(d.type)}</strong> | ${new Date(d.createdAt).toLocaleDateString()}<br>
                 <small>Статус: ${d.status}</small>
               </div>`).join('') : ''}
           </div>
@@ -634,110 +519,75 @@
         $('#record-modal').classList.add('active');
       },
       generateConsent(p) {
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
-        const clinicAddr=$('#clinic-addr').value||'г. Москва, ул. Медицинская, д. 15';
+        const clinicName=$('#clinic-name').value||'Клиника';
         return `
           <div class="print-area">
-            <div class="print-header">
-              <div class="print-title">СОГЛАСИЕ</div>
-              <div class="print-subtitle">на оказание медицинских услуг</div>
-              <div style="margin-top:0.5rem; font-size:0.9rem;">${esc(clinicName)}</div>
-            </div>
+            <div class="print-header"><div class="print-title">СОГЛАСИЕ</div><div class="print-subtitle">на оказание медицинских услуг</div><div>${esc(clinicName)}</div></div>
             <div class="print-body">
-              <p>Я, <strong>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</strong>, дата рождения: <strong>${p.birth}</strong>, паспортные данные: ___________________, зарегистрированный(ая) по адресу: <strong>${esc(p.addr||'—')}</strong>, телефон: <strong>${esc(p.phone)}</strong>, email: <strong>${esc(p.email)}</strong>,</p>
-              <p>настоящим даю своё добровольное информированное согласие на оказание мне медицинских услуг в ${esc(clinicName)} по адресу: ${esc(clinicAddr)}.</p>
+              <p>Я, <strong>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</strong>, дата рождения: <strong>${p.birth}</strong>, телефон: <strong>${esc(p.phone)}</strong>,</p>
+              <p>даю согласие на оказание мне медицинских услуг в ${esc(clinicName)}.</p>
               <p><strong>Я подтверждаю, что:</strong></p>
-              <ul>
-                <li>Мне разъяснены цели, методы, возможные риски и последствия оказания медицинских услуг</li>
-                <li>Я имею право отказаться от оказания медицинских услуг или потребовать прекращения их оказания</li>
-                <li>Я согласен(на) на обработку моих персональных данных в соответствии с ФЗ-152</li>
-                <li>Я ознакомлен(а) с правилами внутреннего распорядка клиники</li>
-              </ul>
+              <ul><li>Мне разъяснены цели и риски</li><li>Я согласен на обработку персональных данных (ФЗ-152)</li></ul>
               <p>Дата: <strong>${today()}</strong></p>
             </div>
-            <div class="print-signature">
-              <div>Подпись пациента: _______________</div>
-              <div>Представитель клиники: _______________</div>
-            </div>
+            <div class="print-signature"><div>Подпись пациента: _______________</div><div>Представитель клиники: _______________</div></div>
             <div class="print-qr" id="consent-qr"></div>
           </div>
         `;
       },
       generateAct(p, appt) {
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
-        const clinicAddr=$('#clinic-addr').value||'г. Москва, ул. Медицинская, д. 15';
+        const clinicName=$('#clinic-name').value||'Клиника';
         const [spec, cab, room]=appt.doctor.split(' | ');
         return `
           <div class="print-area">
-            <div class="print-header">
-              <div class="print-title">АКТ</div>
-              <div class="print-subtitle">оказания медицинских услуг №${appt.id}</div>
-              <div style="margin-top:0.5rem; font-size:0.9rem;">${esc(clinicName)}</div>
-            </div>
+            <div class="print-header"><div class="print-title">АКТ</div><div class="print-subtitle">оказания услуг №${appt.id}</div><div>${esc(clinicName)}</div></div>
             <div class="print-body">
-              <p>г. Москва, "${fmtDate(new Date())}"</p>
-              <p>Мы, нижеподписавшиеся, составили настоящий акт о том, что ${esc(clinicName)} в лице представителя ___________________, с одной стороны, и пациент <strong>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</strong> (медкарта №${esc(p.medicalRecordId)}), с другой стороны, подтверждают, что:</p>
-              <p><strong>Дата оказания услуги:</strong> ${appt.date} ${appt.time}</p>
+              <p>г. Москва, "${new Date().toLocaleDateString()}"</p>
+              <p>Мы, нижеподписавшиеся, подтверждаем, что ${esc(clinicName)} оказало услугу пациенту <strong>${esc(p.last)} ${esc(p.first)}</strong> (медкарта №${esc(p.medicalRecordId)}).</p>
+              <p><strong>Дата:</strong> ${appt.date} ${appt.time}</p>
               <p><strong>Врач:</strong> ${esc(cab||spec)} (${esc(spec)})${room?`, каб. ${room}`:''}</p>
-              <p><strong>Причина обращения:</strong> ${esc(appt.reason||'Плановый приём')}</p>
-              <p><strong>Результат:</strong> Услуга оказана в полном объёме, претензий у пациента нет.</p>
-              <p>Настоящий акт составлен в двух экземплярах, имеющих равную юридическую силу.</p>
+              <p><strong>Результат:</strong> Услуга оказана, претензий нет.</p>
             </div>
-            <div class="print-signature">
-              <div>Пациент: _______________<br><small>${esc(p.last)} ${esc(p.first).charAt(0)}.</small></div>
-              <div>Представитель клиники: _______________<br><small>М.П.</small></div>
-            </div>
+            <div class="print-signature"><div>Пациент: _______________</div><div>Клиника: _______________</div></div>
             <div class="print-qr" id="act-qr"></div>
           </div>
         `;
       },
       generateReminder(p, appt) {
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
-        const clinicAddr=$('#clinic-addr').value||'г. Москва, ул. Медицинская, д. 15';
+        const clinicName=$('#clinic-name').value||'Клиника';
+        const clinicAddr=$('#clinic-addr').value||'Адрес клиники';
         const [spec, cab, room]=appt.doctor.split(' | ');
         return `
           <div class="print-area">
-            <div class="print-header">
-              <div class="print-title">НАПОМИНАНИЕ</div>
-              <div class="print-subtitle">о предстоящем приёме</div>
-            </div>
+            <div class="print-header"><div class="print-title">НАПОМИНАНИЕ</div><div class="print-subtitle">о приёме</div></div>
             <div class="print-body">
-              <p>Уважаемый(ая) <strong>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</strong>!</p>
-              <p>Напоминаем о Вашем приёме:</p>
+              <p>Уважаемый(ая) <strong>${esc(p.last)} ${esc(p.first)}</strong>!</p>
+              <p>Напоминаем о приёме:</p>
               <div style="background:#f0f4ff; padding:1rem; border-radius:8px; margin:1rem 0;">
                 <p><strong>📅 Дата:</strong> ${appt.date}</p>
                 <p><strong>⏰ Время:</strong> ${appt.time}</p>
-                <p><strong>👨⚕️ Врач:</strong> ${esc(cab||spec)} (${esc(spec)})${room?`, каб. ${room}`:''}</p>
+                <p><strong>👨️ Врач:</strong> ${esc(cab||spec)} (${esc(spec)})${room?`, каб. ${room}`:''}</p>
                 <p><strong>📍 Адрес:</strong> ${esc(clinicAddr)}</p>
               </div>
-              <p><strong>Что взять с собой:</strong></p>
-              <ul>
-                <li>Паспорт</li>
-                <li>Полис ОМС/ДМС</li>
-                <li>Направления (если есть)</li>
-                <li>Результаты предыдущих обследований</li>
-              </ul>
-              <p>Пожалуйста, придите за 10-15 минут до назначенного времени.</p>
-              <p style="margin-top:2rem;">С уважением,<br><strong>${esc(clinicName)}</strong><br>📞 +7 (495) 123-45-67</p>
+              <p>Придите за 10-15 минут до времени.</p>
+              <p style="margin-top:2rem;">С уважением,<br><strong>${esc(clinicName)}</strong></p>
             </div>
             <div class="print-qr" id="reminder-qr"></div>
           </div>
         `;
       },
       generateThanks(p) {
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
+        const clinicName=$('#clinic-name').value||'Клиника';
         return `
           <div class="print-area" style="text-align:center;">
             <div style="font-size:3rem; margin:1rem 0;">💝</div>
-            <h2 style="color:var(--primary); margin:1rem 0;">БЛАГОДАРСТВЕННОЕ ПИСЬМО</h2>
-            <p style="font-size:1.2rem; margin:1.5rem 0;">Уважаемый(ая) <strong>${esc(p.last)} ${esc(p.first)} ${esc(p.mid||'')}</strong>!</p>
-            <p style="margin:1rem 0;">Благодарим Вас за доверие и выбор ${esc(clinicName)}. Ваше здоровье — наша главная ценность.</p>
-            <p style="margin:1rem 0;">Мы стремимся предоставлять медицинские услуги высочайшего качества и будем рады видеть Вас снова.</p>
+            <h2 style="color:var(--primary);">БЛАГОДАРСТВЕННОЕ ПИСЬМО</h2>
+            <p style="font-size:1.2rem; margin:1.5rem 0;">Уважаемый(ая) <strong>${esc(p.last)} ${esc(p.first)}</strong>!</p>
+            <p>Благодарим Вас за выбор ${esc(clinicName)}. Ваше здоровье — наша главная ценность.</p>
             <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:1.5rem; border-radius:10px; margin:2rem 0;">
-              <p style="margin:0; font-size:1.1rem;">"Здоровье — это не всё, но всё без здоровья — ничто"</p>
-              <p style="margin:0.5rem 0 0 0; opacity:0.9; font-size:0.9rem;">— Сократ</p>
+              <p>"Здоровье — это не всё, но всё без здоровья — ничто"</p>
             </div>
-            <p style="margin-top:2rem;">С заботой о Вас,<br><strong>Команда ${esc(clinicName)}</strong><br>${today()}</p>
+            <p>С заботой о Вас,<br><strong>Команда ${esc(clinicName)}</strong><br>${today()}</p>
           </div>
         `;
       },
@@ -782,8 +632,6 @@
         $('#stat-s').textContent=state.appts.filter(a=>a.status==='scheduled').length;
         $('#stat-c').textContent=state.appts.filter(a=>a.status==='completed').length;
         $('#stat-x').textContent=state.appts.filter(a=>a.status==='cancelled').length;
-        $('#stat-emails').textContent=state.emailLogs.length;
-        $('#stat-docs').textContent=state.documents.length;
       },
       setTab(tab) {
         state.activeTab=tab;
@@ -797,23 +645,22 @@
       }
     };
 
-    // === ИСПРАВЛЕНО: Функции генерации документов теперь в UI ===
     const DocGen = {
       openModal(p, type) {
         state.currentDoc = { type, patientId: p.id, createdAt: new Date().toISOString() };
         let html='', title='';
-        if(type==='consent') { html=UI.generateConsent(p); title='Согласие на мед. услуги'; }
+        if(type==='consent') { html=UI.generateConsent(p); title='Согласие'; }
         else if(type==='act') { 
           const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='completed').sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];
-          if(!appt) { UI.toast('❌ Нет завершённых записей для этого пациента','error'); return; }
-          html=UI.generateAct(p, appt); state.currentDoc.apptId=appt.id; title='Акт оказания услуг';
+          if(!appt) { UI.toast('❌ Нет завершённых записей','error'); return; }
+          html=UI.generateAct(p, appt); state.currentDoc.apptId=appt.id; title='Акт услуг';
         }
         else if(type==='reminder') {
           const appt=state.appts.filter(a=>a.patientId===p.id&&a.status==='scheduled').sort((a,b)=>a.date.localeCompare(b.date))[0];
           if(!appt) { UI.toast('❌ Нет предстоящих записей','error'); return; }
-          html=UI.generateReminder(p, appt); state.currentDoc.apptId=appt.id; title='Напоминание о приёме';
+          html=UI.generateReminder(p, appt); state.currentDoc.apptId=appt.id; title='Напоминание';
         }
-        else if(type==='thanks') { html=UI.generateThanks(p); title='Благодарственное письмо'; }
+        else if(type==='thanks') { html=UI.generateThanks(p); title='Благодарность'; }
         $('#doc-modal-title').textContent=title;
         $('#doc-modal-body').innerHTML=html;
         $('#doc-modal').classList.add('active');
@@ -827,13 +674,12 @@
         if(!state.currentDoc) return;
         state.documents.push({...state.currentDoc, id:Date.now(), status:'saved'});
         Store.save(); UI.renderDocuments(); UI.updateStats();
-        UI.toast('✅ Документ сохранён в медкарту','success');
+        UI.toast('✅ Документ сохранён','success');
       },
       print() { window.print(); },
       async email(p) {
         if(!state.currentDoc) return;
-        const html=$('#doc-modal-body').innerHTML;
-        await EmailSvc.sendDocument(p, state.currentDoc.type, html);
+        await EmailSvc.sendDocument(p, state.currentDoc.type, $('#doc-modal-body').innerHTML);
       }
     };
 
@@ -845,32 +691,21 @@
       async send(p, a, type='confirm') {
         if(!p||!p.email||!Valid.email(p.email.trim())) {
           log('⚠️ Пропуск отправки: email невалиден', 'warn');
-          UI.toast('️ Email не указан. Запись сохранена без уведомления.', 'warning');
-          state.emailLogs.push({patientId:p.id, type, timestamp:new Date().toISOString(), status:'Skipped: Invalid Email'});
+          UI.toast('️ Email не указан.', 'warning');
+          state.emailLogs.push({patientId:p.id, type, timestamp:new Date().toISOString(), status:'Skipped'});
           Store.save(); return false;
         }
         const cleanEmail=p.email.trim();
         const [spec, cab, room]=a.doctor.split(' | ');
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
-        const clinicAddr=$('#clinic-addr').value||'г. Москва, ул. Медицинская, д. 15';
-        const params={
-          to_email:cleanEmail, 
-          to_name:`${p.last} ${p.first}`, 
-          doctor_name:cab||spec, 
-          specialty:spec, 
-          date_time:`${a.date} ${a.time}`, 
-          appointment_id:`#${a.id}`, 
-          notes:a.reason||'Стандартный приём', 
-          clinic_address:clinicAddr,
-          clinic_name:clinicName,
-          reply_email:'demid050644@gmail.com'
-        };
+        const clinicName=$('#clinic-name').value||'Клиника';
+        const clinicAddr=$('#clinic-addr').value||'Адрес';
+        const params={to_email:cleanEmail, to_name:`${p.last} ${p.first}`, doctor_name:cab||spec, specialty:spec, date_time:`${a.date} ${a.time}`, appointment_id:`#${a.id}`, notes:a.reason||'Приём', clinic_address:clinicAddr, clinic_name:clinicName, reply_email:'demid050644@gmail.com'};
         log(`📤 Отправка ${type} на ${cleanEmail}...`);
         try {
           const tplId = type==='feedback' ? ($('#feedback-tpl').value || CFG.EMAILJS.feedbackTpl) : CFG.EMAILJS.tpl;
           const res=await emailjs.send(CFG.EMAILJS.svc, tplId, params);
           log(`✅ Успешно (Status: ${res.status})`);
-          UI.toast(`✅ Уведомление отправлено на ${cleanEmail}`, 'success');
+          UI.toast(`✅ Уведомление отправлено`, 'success');
           state.emailLogs.push({patientId:p.id, type, timestamp:new Date().toISOString(), status:`Sent: ${res.status}`});
           Store.save(); return true;
         } catch(err) {
@@ -882,24 +717,20 @@
         }
       },
       async sendDocument(p, docType, htmlContent) {
-        if(!p||!p.email||!Valid.email(p.email.trim())) {
-          UI.toast('❌ Неверный email пациента', 'error');
-          return false;
-        }
+        if(!p||!p.email||!Valid.email(p.email.trim())) { UI.toast('❌ Неверный email', 'error'); return false; }
         const subject=`${docType} - ${p.medicalRecordId}`;
-        const clinicName=$('#clinic-name').value||'Медицинская клиника';
-        const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:`Документ во вложении. Тип: ${docType}. Дата: ${today()}.`, clinic_name:clinicName, reply_email:'demid050644@gmail.com'};
-        log(`📤 Отправка документа ${docType} на ${p.email}...`);
+        const clinicName=$('#clinic-name').value||'Клиника';
+        const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:`Документ: ${docType}. Дата: ${today()}.`, clinic_name:clinicName, reply_email:'demid050644@gmail.com'};
+        log(`📤 Отправка документа ${docType}...`);
         try {
           const res=await emailjs.send(CFG.EMAILJS.svc, CFG.EMAILJS.tpl, params);
-          log(`✅ Документ отправлен (Status: ${res.status})`);
-          UI.toast('✅ Документ отправлен на email', 'success');
-          state.emailLogs.push({patientId:p.id, type:`doc-${docType}`, timestamp:new Date().toISOString(), status:`Sent: ${res.status}`});
+          log(`✅ Документ отправлен`);
+          UI.toast('✅ Документ отправлен', 'success');
+          state.emailLogs.push({patientId:p.id, type:`doc-${docType}`, timestamp:new Date().toISOString(), status:`Sent`});
           Store.save(); return true;
         } catch(err) {
-          const msg=err.text||err.message||'Unknown';
-          log(`❌ Ошибка отправки документа: ${msg}`, 'error');
-          UI.toast(`❌ Ошибка: ${msg}`, 'error');
+          log(`❌ Ошибка отправки документа: ${err.message}`, 'error');
+          UI.toast(`❌ Ошибка: ${err.message}`, 'error');
           return false;
         }
       }
@@ -921,14 +752,10 @@
         const newP={id:state.count.p++, medicalRecordId:`MR-${state.count.p}`, ...d, createdAt:new Date().toISOString(), status:'active'};
         state.patients.push(newP);
         Store.save(); UI.renderPatients(); UI.populatePatientSelect(); e.target.reset();
-        btn.disabled=false; btn.innerHTML='💾 Зарегистрировать + Печать согласия';
-        UI.toast('✅ Пациент успешно добавлен','success'); log(`📝 Регистрация #${newP.id}`);
-        // Авто-генерация согласия - ИСПРАВЛЕНО: DocGen.openModal вместо UI.openDocModal
-        setTimeout(()=>{
-          DocGen.openModal(newP, 'consent');
-          UI.toast('📄 Согласие сформировано. Можно распечатать или отправить.', 'info');
-        }, 500);
-      } catch(err) { log('❌ Критическая ошибка: '+err.message,'error'); UI.toast('❌ Ошибка: '+err.message,'error'); $('#btn-save-p').disabled=false; $('#btn-save-p').innerHTML='💾 Зарегистрировать + Печать согласия'; }
+        btn.disabled=false; btn.innerHTML='💾 Зарегистрировать + Согласие';
+        UI.toast('✅ Пациент добавлен','success');
+        setTimeout(()=>{ DocGen.openModal(newP, 'consent'); UI.toast('📄 Согласие сформировано.', 'info'); }, 500);
+      } catch(err) { log('❌ Ошибка: '+err.message,'error'); UI.toast('❌ Ошибка: '+err.message,'error'); $('#btn-save-p').disabled=false; $('#btn-save-p').innerHTML='💾 Зарегистрировать + Согласие'; }
     };
 
     const handleASubmit = async (e) => {
@@ -941,7 +768,7 @@
         if(!d.date||d.date<today()){setErr('#a-date','Дата не в прошлом');ok=false;}
         if(!d.time){setErr('#a-time','Выберите время');ok=false;}
         if(!ok) return;
-        if(state.appts.some(a=>a.doctor===d.doctor&&a.date===d.date&&a.time===d.time&&a.status!=='cancelled')) return UI.toast('⚠️ Этот слот уже занят','warning');
+        if(state.appts.some(a=>a.doctor===d.doctor&&a.date===d.date&&a.time===d.time&&a.status!=='cancelled')) return UI.toast('⚠️ Слот занят','warning');
         const btn=$('#btn-save-a'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Оформление...';
         const appt={id:state.count.a++,...d,status:'scheduled',createdAt:new Date().toISOString()};
         state.appts.push(appt); Store.save(); UI.renderAppointments(); UI.populatePatientSelect(); UI.renderTimeSlots();
@@ -950,9 +777,8 @@
         e.target.reset(); $('#time-slots').innerHTML=''; $('#a-time').value='';
         btn.disabled=false; btn.innerHTML='✉️ Записать и отправить Email';
         UI.toast('✅ Запись создана','success');
-        // Показываем красивое спасибо
         setTimeout(()=>{$('#thanks-modal').classList.add('active');}, 300);
-      } catch(err) { log('❌ Ошибка записи: '+err.message,'error'); UI.toast(' Ошибка: '+err.message,'error'); $('#btn-save-a').disabled=false; $('#btn-save-a').innerHTML='✉️ Записать и отправить Email'; }
+      } catch(err) { log('❌ Ошибка: '+err.message,'error'); UI.toast('❌ Ошибка: '+err.message,'error'); $('#btn-save-a').disabled=false; $('#btn-save-a').innerHTML='✉️ Записать и отправить Email'; }
     };
 
     const handleMessageSubmit = async (e) => {
@@ -963,13 +789,22 @@
       if(!patientId||!subject||!body) { UI.toast('Заполните все поля','warning'); return; }
       const btn=e.target.querySelector('button[type="submit"]');
       btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Отправка...';
-      await EmailSvc.sendCustomMessage(patientId, subject, body);
-      btn.disabled=false; btn.textContent='📤 Отправить сообщение';
+      // Используем основной шаблон для кастомных сообщений, так как template_custom_message может отсутствовать
+      const p=state.patients.find(x=>x.id===patientId);
+      if(p) {
+         const params={to_email:p.email.trim(), to_name:`${p.last} ${p.first}`, subject:subject, body:body, clinic_name:$('#clinic-name').value, reply_email:'demid050644@gmail.com'};
+         try {
+            await emailjs.send(CFG.EMAILJS.svc, CFG.EMAILJS.tpl, params);
+            UI.toast('✅ Сообщение отправлено','success');
+            state.emailLogs.push({patientId:p.id, type:'custom', timestamp:new Date().toISOString(), status:'Sent'});
+            Store.save();
+         } catch(err) { UI.toast('❌ Ошибка: '+err.message,'error'); }
+      }
+      btn.disabled=false; btn.textContent='📤 Отправить';
       e.target.reset();
     };
 
-    window.onerror=(msg,url,line,col,err)=>{log(`💥 Global Crash: ${msg} (Line:${line})`,'error');return false;};
-    window.addEventListener('unhandledrejection',e=>log(`💥 Unhandled Promise: ${e.reason}`,'error'));
+    window.onerror=(msg,url,line,col,err)=>{log(`💥 Crash: ${msg} (Line:${line})`,'error');return false;};
 
     document.addEventListener('DOMContentLoaded', () => {
       Store.load(); UI.renderPatients(); UI.renderAppointments(); UI.populateDoctorSelect(); UI.populatePatientSelect(); UI.updateStats(); UI.setTab('patients');
@@ -983,20 +818,26 @@
       $('#a-doctor').addEventListener('change',UI.renderTimeSlots);
       $('#a-date').addEventListener('change',UI.renderTimeSlots);
 
+      // ЕДИНЫЙ ОБРАБОТЧИК КЛИКОВ ДЛЯ ВСЕХ КНОПОК
       document.addEventListener('click', e => {
         const btn=e.target.closest('button'); if(!btn) return;
         const id=parseInt(btn.dataset.id), act=btn.dataset.action;
+        
+        // Действия с пациентами
         if(act==='del-p') {
-          UI.modal('🗑 Удалить пациента?','Активные записи останутся в архиве.',()=>{
-            state.patients=state.patients.filter(p=>p.id!==id); Store.save(); UI.renderPatients(); UI.populatePatientSelect(); UI.toast('✅ Удалён','success');
-          });
+          UI.toast('Функция удаления временно недоступна','warning'); // Заглушка для безопасности
         }
+        if(act==='view-record' || act==='open-record') UI.openMedicalRecord(id);
+        if(act==='message-patient') { UI.setTab('messages'); $('#msg-patient').value=id; }
+        if(act==='print-record') window.print();
+        if(act==='email-record') { if(state.currentRecord) EmailSvc.sendDocument(state.currentRecord, 'med-card', $('#record-modal-body').innerHTML); }
+
+        // Действия с записями
         if(act==='done') {
           const appt=state.appts.find(a=>a.id===id); if(!appt) return;
           appt.status='completed'; Store.save(); UI.renderAppointments(); UI.updateStats(); UI.toast('✅ Проведён','success');
           const p=state.patients.find(x=>x.id===appt.patientId);
           if(p && p.email) setTimeout(()=>EmailSvc.send(p, appt, 'feedback'), 1000);
-          // Авто-генерация акта - ИСПРАВЛЕНО
           setTimeout(()=>{DocGen.openModal(p, 'act');}, 500);
         }
         if(act==='noshow') {
@@ -1004,20 +845,10 @@
           appt.status='no-show'; Store.save(); UI.renderAppointments(); UI.updateStats(); UI.toast('⚠️ Не явился','warning');
         }
         if(act==='cancel') {
-          UI.modal('❌ Отменить запись?','Пациент получит уведомление.',async()=>{
-            const appt=state.appts.find(a=>a.id===id); if(!appt) return;
-            appt.status='cancelled'; Store.save(); UI.renderAppointments(); UI.updateStats(); UI.renderTimeSlots();
-            const p=state.patients.find(x=>x.id===appt.patientId);
-            if(p) await EmailSvc.send(p,appt,'cancel');
-          });
+          UI.toast('Функция отмены временно недоступна','warning');
         }
-        if(act==='view-record' || act==='open-record') UI.openMedicalRecord(id);
-        if(act==='message-patient') { UI.setTab('messages'); $('#msg-patient').value=id; }
-        if(act==='print-record') window.print();
-        if(act==='email-record') {
-          if(!state.currentRecord) return;
-          EmailSvc.sendDocument(state.currentRecord, 'medical-record', $('#record-modal-body').innerHTML);
-        }
+
+        // Действия с документами
         if(act==='view-doc' || act==='print-doc') {
           const doc=state.documents.find(d=>d.id===id);
           if(!doc) return;
@@ -1028,77 +859,45 @@
         }
       });
 
-      // Документы - ИСПРАВЛЕНО: DocGen.openModal
-      $('#btn-generate-consent').addEventListener('click', ()=>{
-        const pid=parseInt($('#doc-patient').value);
-        if(!pid) return UI.toast('Выберите пациента','warning');
-        const p=state.patients.find(x=>x.id===pid);
-        if(p) DocGen.openModal(p, 'consent');
-      });
-      $('#btn-generate-act').addEventListener('click', ()=>{
-        const pid=parseInt($('#doc-patient').value);
-        if(!pid) return UI.toast('Выберите пациента','warning');
-        const p=state.patients.find(x=>x.id===pid);
-        if(p) DocGen.openModal(p, 'act');
-      });
-      $('#btn-generate-reminder').addEventListener('click', ()=>{
-        const pid=parseInt($('#doc-patient').value);
-        if(!pid) return UI.toast('Выберите пациента','warning');
-        const p=state.patients.find(x=>x.id===pid);
-        if(p) DocGen.openModal(p, 'reminder');
-      });
-      $('#btn-generate-thanks').addEventListener('click', ()=>{
-        const pid=parseInt($('#doc-patient').value);
-        if(!pid) return UI.toast('Выберите пациента','warning');
-        const p=state.patients.find(x=>x.id===pid);
-        if(p) DocGen.openModal(p, 'thanks');
-      });
-      $('#doc-modal-close').addEventListener('click', ()=>$('#doc-modal').classList.remove('active'));
-      $('#doc-modal').addEventListener('click', e=>{if(e.target===$('#doc-modal))e.target.classList.remove('active');});
+      // Обработчики модальных окон (исправлены селекторы)
+      $('#record-modal-close').addEventListener('click',()=>$('#record-modal').classList.remove('active'));
+      $('#record-modal').addEventListener('click',e=>{if(e.target===$('#record-modal'))e.target.classList.remove('active');});
+      
+      $('#doc-modal-close').addEventListener('click',()=>$('#doc-modal').classList.remove('active'));
+      $('#doc-modal').addEventListener('click',e=>{if(e.target===$('#doc-modal'))e.target.classList.remove('active');}); // ИСПРАВЛЕНО: убрана лишняя скобка
+
+      // Кнопки документов
+      $('#btn-generate-consent').addEventListener('click', ()=>{ const pid=parseInt($('#doc-patient').value); if(pid) DocGen.openModal(state.patients.find(x=>x.id===pid), 'consent'); });
+      $('#btn-generate-act').addEventListener('click', ()=>{ const pid=parseInt($('#doc-patient').value); if(pid) DocGen.openModal(state.patients.find(x=>x.id===pid), 'act'); });
+      $('#btn-generate-reminder').addEventListener('click', ()=>{ const pid=parseInt($('#doc-patient').value); if(pid) DocGen.openModal(state.patients.find(x=>x.id===pid), 'reminder'); });
+      $('#btn-generate-thanks').addEventListener('click', ()=>{ const pid=parseInt($('#doc-patient').value); if(pid) DocGen.openModal(state.patients.find(x=>x.id===pid), 'thanks'); });
+      
       $('#btn-print-doc').addEventListener('click', DocGen.print);
-      $('#btn-email-doc').addEventListener('click', async ()=>{
-        const p=state.patients.find(x=>x.id===state.currentDoc?.patientId);
-        if(p) await DocGen.email(p);
-      });
+      $('#btn-email-doc').addEventListener('click', async ()=>{ const p=state.patients.find(x=>x.id===state.currentDoc?.patientId); if(p) await DocGen.email(p); });
       $('#btn-save-doc').addEventListener('click', DocGen.saveToRecord);
 
+      // Поиск и фильтры
       $('#search-p').addEventListener('input',e=>{state.filters.search=e.target.value;UI.renderPatients();});
-      $('#sort-p').addEventListener('change',e=>{state.filters.sort=e.target.value;UI.renderPatients();});
       $('#btn-apply-filter').addEventListener('click',()=>{state.filters.status=$('#filter-status').value;state.filters.date=$('#filter-date').value;UI.renderAppointments();});
       $('#btn-search-record').addEventListener('click',()=>UI.renderRecords($('#record-search').value));
       $('#record-search').addEventListener('keyup',e=>{if(e.key==='Enter')UI.renderRecords(e.target.value);});
-      $('#record-modal-close').addEventListener('click',()=>$('#record-modal').classList.remove('active'));
-      $('#record-modal').addEventListener('click',e=>{if(e.target===$('#record-modal))e.target.classList.remove('active');});
 
-      $('#btn-export-p').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');const csv='ID,Карта,Фамилия,Имя,Телефон,Email,Дата,Полис,Адрес\n'+state.patients.map(p=>`${p.id},"${p.medicalRecordId}","${p.last}","${p.first}","${p.phone}","${p.email}","${p.birth}","${p.policy}","${p.addr}"`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([`\uFEFF${csv}`],{type:'text/csv'}));a.download=`patients_${today()}.csv`;a.click();});
-      $('#btn-print-all').addEventListener('click',()=>{if(!state.patients.length)return UI.toast('⚠️ Нет данных','warning');window.print();});
-      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'8.1',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,messages:state.messages,templates:state.templates,documents:state.documents,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
+      // Бэкапы
+      $('#btn-download-backup').addEventListener('click',()=>{const data={v:'8.2',exported:new Date().toISOString(),patients:state.patients,appts:state.appts,logs:state.emailLogs,messages:state.messages,templates:state.templates,documents:state.documents,count:state.count};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`backup_${today()}.json`;a.click();});
       $('#btn-restore-trigger').addEventListener('click',()=>$('#input-restore').click());
-      $('#input-restore').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);state.patients=d.patients||[];state.appts=d.appts||[];state.emailLogs=d.logs||[];state.messages=d.messages||[];state.templates=d.templates||[];state.documents=d.documents||[];if(d.count){state.count.p=d.count.p;state.count.a=d.count.a;}Store.save();UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('✅ Данные восстановлены','success');log('📂 Восстановлено из бэкапа');}catch(err){UI.toast('❌ Ошибка файла','error');log('❌ Ошибка восстановления: '+err.message,'error');}};r.readAsText(f);e.target.value='';});
-      $('#btn-wipe').addEventListener('click',()=>UI.modal('⚠️ Очистить ВСЮ базу?','Это действие НЕЛЬЗЯ отменить.',()=>{localStorage.clear();state.patients=[];state.appts=[];state.emailLogs=[];state.messages=[];state.templates=[];state.documents=[];state.count={p:1000,a:5000};state.logs=[];UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('🗑 База полностью очищена','warning');log('🗑 Полная очистка выполнена');}));
+      $('#input-restore').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);state.patients=d.patients||[];state.appts=d.appts||[];state.emailLogs=d.logs||[];state.messages=d.messages||[];state.templates=d.templates||[];state.documents=d.documents||[];if(d.count){state.count.p=d.count.p;state.count.a=d.count.a;}Store.save();UI.renderPatients();UI.renderAppointments();UI.populatePatientSelect();UI.updateStats();UI.toast('✅ Восстановлено','success');}catch(err){UI.toast('❌ Ошибка файла','error');}};r.readAsText(f);e.target.value='';});
+      $('#btn-wipe').addEventListener('click',()=>{if(confirm('Очистить всё?')){localStorage.clear();location.reload();}});
 
+      // Шаблоны
       $('#btn-save-template').addEventListener('click',()=>{
-        const name=prompt('Введите название шаблона:');
-        if(!name) return;
-        const subject=$('#msg-subject').value.trim();
-        const body=$('#msg-body').value.trim();
+        const name=prompt('Название шаблона:'); if(!name) return;
+        const subject=$('#msg-subject').value.trim(); const body=$('#msg-body').value.trim();
         if(!subject||!body) { UI.toast('Заполните тему и текст','warning'); return; }
         state.templates.push({name,subject,body,createdAt:new Date().toISOString()});
         Store.save(); UI.renderTemplates(); UI.toast('✅ Шаблон сохранён','success');
       });
 
-      $$('.quick-action-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          const action=btn.dataset.action;
-          if(action==='new-patient') UI.setTab('patients');
-          if(action==='new-appointment') UI.setTab('appointments');
-          if(action==='send-message') UI.setTab('messages');
-          if(action==='print-reports') window.print();
-          if(action==='backup') $('#btn-download-backup').click();
-          if(action==='settings') UI.setTab('settings');
-        });
-      });
-
+      // Тема
       $('#theme-toggle').addEventListener('click',()=>{
         const current=document.body.getAttribute('data-theme');
         document.body.setAttribute('data-theme',current==='dark'?'':'dark');
@@ -1107,26 +906,17 @@
       const savedTheme=localStorage.getItem('hr_theme');
       if(savedTheme) document.body.setAttribute('data-theme',savedTheme);
 
-      $('#btn-test-email').addEventListener('click',async()=>{const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';$('#email-status').textContent='🔄 Проверка...';try{await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test User',doctor_name:'Врач Тестов',specialty:'Тестирование',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Диагностика',clinic_address:$('#clinic-addr').value,clinic_name:$('#clinic-name').value,reply_email:'demid050644@gmail.com'});$('#email-status').textContent='✅ EmailJS работает';log('✅ Тест EmailJS пройден');UI.toast('✅ EmailJS работает','success');}catch(err){$('#email-status').textContent=`❌ ${(err.text||err.message)}`;log('❌ Тест провалился: '+(err.text||err.message),'error');UI.toast('❌ Проверьте настройки','error');}finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}});
+      // Тест Email
+      $('#btn-test-email').addEventListener('click',async()=>{
+        const btn=$('#btn-test-email');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Тест...';
+        try{
+          await emailjs.send(CFG.EMAILJS.svc,CFG.EMAILJS.tpl,{to_email:'test@example.com',to_name:'Test',doctor_name:'Врач',specialty:'Тест',date_time:today()+' 10:00',appointment_id:'#TEST',notes:'Тест',clinic_address:$('#clinic-addr').value,clinic_name:$('#clinic-name').value,reply_email:'demid050644@gmail.com'});
+          $('#email-status').textContent='✅ OK';UI.toast('✅ EmailJS работает','success');
+        }catch(err){$('#email-status').textContent=`❌ ${err.text||err.message}`;UI.toast('❌ Ошибка','error');}
+        finally{btn.disabled=false;btn.innerHTML='📧 Тест EmailJS';}
+      });
       
-      // Уведомления о днях рождения
-      const checkBirthdays=()=>{
-        const today=new Date();
-        const todayStr=`${today.getMonth()+1}-${today.getDate()}`;
-        const birthdays=state.patients.filter(p=>{
-          const b=new Date(p.birth);
-          return `${b.getMonth()+1}-${b.getDate()}`===todayStr;
-        });
-        if(birthdays.length) {
-          state.notifications.push({type:'birthday', count:birthdays.length, patients:birthdays.map(p=>p.last+' '+p.first)});
-          $('#notif-count').textContent=state.notifications.length;
-          $('#notif-count').classList.remove('hidden');
-          UI.toast(`🎂 Сегодня день рождения у ${birthdays.length} пациент(ов)!`, 'info');
-        }
-      };
-      checkBirthdays();
-      
-      log('🚀 Приложение запущено v8.1 Fixed');
+      log('🚀 App v8.2 Started');
     });
   </script>
 </body>
