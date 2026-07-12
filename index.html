@@ -1,2777 +1,1889 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6366f1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Милорды - Мессенджер</title>
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CymkiBY — Премиум сумки со всего мира">
+    <meta name="keywords" content="сумки, премиум, доставка, Россия, CymkiBY">
+    <meta property="og:title" content="CymkiBY — Премиум сумки со всего мира">
+    <meta property="og:description" content="Эксклюзивные сумки с доставкой по России">
+    <meta property="og:type" content="website">
+    <base href="./">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%9C%3C/text%3E%3C/svg%3E">
+    <title>CymkiBY — Премиум сумки со всего мира</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark-bg: #0f172a;
-            --dark-surface: #1e293b;
-            --dark-border: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            overflow: hidden;
-            height: 100vh;
-            touch-action: manipulation;
-        }
-        .screen { display: none; height: 100vh; }
-        .screen.active { display: flex; }
 
-        /* Login Screen */
-        #loginScreen {
-            justify-content: center;
-            align-items: center;
-            background: var(--gradient-1);
-            position: relative;
-            overflow: hidden;
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4d03f;
+            --gold-dark: #b8941f;
+            --dark: #0a0a0a;
+            --dark-2: #1a1a1a;
+            --dark-3: #2a2a2a;
+            --white: #ffffff;
+            --gray: #888;
+            --success: #4caf50;
+            --danger: #e74c3c;
+            --shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+            --shadow-hover: 0 20px 60px rgba(212, 175, 55, 0.3);
         }
-        #loginScreen::before {
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .preloader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s;
+        }
+
+        header.scrolled {
+            padding: 15px 60px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '™';
+            font-size: 0.8rem;
+            position: absolute;
+            top: 5px;
+            right: -20px;
+            -webkit-text-fill-color: var(--gold);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav ul li a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        nav ul li a::after {
             content: '';
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: bgMove 20s linear infinite;
+            bottom: -5px; left: 0;
+            width: 0; height: 2px;
+            background: var(--gold);
+            transition: width 0.3s;
         }
-        @keyframes bgMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+
+        nav ul li a:hover {
+            color: var(--gold);
         }
-        .login-container {
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow-xl);
-            width: 95%;
-            max-width: 420px;
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             position: relative;
-            z-index: 1;
-            animation: slideUp 0.5s ease-out;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
         }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 25px;
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero h1 .gold {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-outline:hover {
+            background: var(--white);
+            color: var(--dark);
+            transform: translateY(-3px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .about {
+            padding: 120px 60px;
+            background: var(--dark-2);
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header .subtitle {
+            display: inline-block;
+            color: var(--gold);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 .gold {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-card {
+            background: var(--dark-3);
+            padding: 50px 35px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .about-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .about-card .icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: var(--dark);
+        }
+
+        .about-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .about-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .stats {
+            padding: 80px 60px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-item p {
+            color: var(--gray);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        .products {
+            padding: 120px 60px;
+            background: var(--dark);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--dark-2);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.4s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            position: relative;
+            background: var(--dark-3);
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px; left: 15px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-info {
+            padding: 30px;
+        }
+
+        .product-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .product-info .description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .product-price .currency {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-buy:hover {
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-view:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .no-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px;
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+
+        .no-products i {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .tracking {
+            padding: 120px 60px;
+            background: var(--dark-2);
+        }
+
+        .tracking-box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--dark-3);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .tracking-input {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tracking-input input {
+            flex: 1;
+            padding: 15px 25px;
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50px;
+            color: var(--white);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .tracking-input input:focus {
+            border-color: var(--gold);
+        }
+
+        .tracking-input input::placeholder {
+            color: var(--gray);
+        }
+
+        .tracking-input button {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tracking-input button:hover {
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .tracking-result {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .tracking-result.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .tracking-status {
+            background: var(--dark);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .tracking-status h4 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .status-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px; top: 0;
+            width: 2px; height: 100%;
+            background: var(--dark-3);
+        }
+
+        .status-step {
+            position: relative;
+            padding: 10px 0;
+            color: var(--gray);
+            transition: color 0.3s;
+        }
+
+        .status-step::before {
+            content: '';
+            position: absolute;
+            left: -26px; top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--dark-3);
+            border: 2px solid var(--gray);
+        }
+
+        .status-step.completed {
+            color: var(--gold);
+        }
+
+        .status-step.completed::before {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .status-step.current {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .status-step.current::before {
+            background: var(--gold);
+            border-color: var(--gold-light);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .guarantee {
+            padding: 120px 60px;
+            background: var(--dark);
+            text-align: center;
+        }
+
+        .guarantee-box {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0.02));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px;
+        }
+
+        .guarantee-box .shield-icon {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 2.5rem;
+            color: var(--dark);
+        }
+
+        .guarantee-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .guarantee-box p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .guarantee-box .highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        footer {
+            padding: 60px;
+            background: var(--dark-2);
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            text-align: center;
+        }
+
+        footer .logo {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        footer p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        footer .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        footer .social-links a {
+            width: 45px; height: 45px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        footer .social-links a:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .footer-support {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .footer-support a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .footer-support a:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: var(--dark-2);
+            border-radius: 20px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            animation: slideUp 0.4s ease;
+        }
+
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .logo { text-align: center; margin-bottom: 2rem; }
-        .logo i {
-            font-size: 3.5rem;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: crownFloat 3s ease-in-out infinite;
-        }
-        @keyframes crownFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .logo h1 {
-            font-size: 2rem;
-            margin-top: 1rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .logo p { color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem; }
-        .input-group {
-            position: relative;
-            margin-bottom: 1.2rem;
-        }
-        .input-group i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-        .input-group input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gradient-1);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        .btn-secondary {
-            padding: 0.75rem 1.5rem;
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-secondary:hover { background: var(--dark-border); }
-        .btn-icon-sm {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: none;
-            background: var(--dark-surface);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-icon-sm:hover { background: var(--primary); }
 
-        /* Main Screen */
-        #mainScreen { flex-direction: row; }
-        .sidebar {
-            width: 320px;
-            background: var(--dark-surface);
-            border-right: 1px solid var(--dark-border);
+        .modal-header {
+            padding: 30px 35px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
             display: flex;
-            flex-direction: column;
-        }
-        .sidebar-header {
-            padding: 1rem;
-            border-bottom: 1px solid var(--dark-border);
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-        .user-profile { display: flex; align-items: center; gap: 0.75rem; flex: 1; }
-        .avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            overflow: hidden;
-            position: relative;
-            background: var(--gradient-1);
-            display: flex;
             align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
         }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar.large { width: 100px; height: 100px; }
-        .avatar.online::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 12px;
-            height: 12px;
-            background: var(--success);
-            border-radius: 50%;
-            border: 2px solid var(--dark-surface);
-        }
-        .animated-avatar.pulse { animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
-            50% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
-        }
-        .animated-avatar.rotate { animation: rotate 3s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animated-avatar.bounce { animation: bounce 1s ease-in-out infinite; }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animated-avatar.glow { animation: glow 2s ease-in-out infinite; }
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.8); }
-        }
-        .animated-avatar.rainbow { animation: rainbow 3s linear infinite; }
-        @keyframes rainbow {
-            0% { box-shadow: 0 0 20px #ff0000; }
-            33% { box-shadow: 0 0 20px #00ff00; }
-            66% { box-shadow: 0 0 20px #0000ff; }
-            100% { box-shadow: 0 0 20px #ff0000; }
-        }
-        .user-info { flex: 1; min-width: 0; }
-        .user-info h3 { font-size: 0.95rem; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .status {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .settings-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--dark-bg);
-            border: none;
-            border-radius: 10px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .settings-btn:hover { background: var(--primary); transform: rotate(90deg); }
-        .sidebar-nav {
-            padding: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.9rem;
-            background: transparent;
-            border: none;
-            border-radius: 10px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .nav-item:hover { background: var(--dark-bg); color: var(--text-primary); }
-        .nav-item.active { background: var(--gradient-1); color: white; }
-        .nav-item i { width: 20px; font-size: 1.1rem; }
-        .nav-item .badge {
-            margin-left: auto;
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 10px;
-        }
-        .group-info {
-            margin-top: auto;
-            padding: 1rem;
-            border-top: 1px solid var(--dark-border);
-            text-align: center;
-        }
-        .group-info h4 {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 0.4rem;
-            font-size: 0.95rem;
-        }
-        .group-info p { color: var(--text-muted); font-size: 0.85rem; }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--dark-bg);
-        }
-        .tab-content { display: none; flex-direction: column; height: 100%; }
-        .tab-content.active { display: flex; }
-        .chat-header {
-            padding: 1rem 1.5rem;
-            background: var(--dark-surface);
-            border-bottom: 1px solid var(--dark-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .chat-title { display: flex; align-items: center; gap: 1rem; flex: 1; }
-        .crown-icon {
+        .modal-header h3 {
+            font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        .chat-title h2 { font-size: 1.3rem; }
-        .chat-header-info { display: flex; flex-direction: column; }
-        .chat-header-subtitle { font-size: 0.8rem; color: var(--text-muted); }
-        .typing-indicator {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-        .chat-actions { display: flex; gap: 0.5rem; }
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--dark-bg);
+
+        .modal-close {
+            width: 40px; height: 40px;
+            background: var(--dark-3);
             border: none;
+            border-radius: 50%;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+        }
+
+        .modal-body {
+            padding: 30px 35px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 10px;
-            color: var(--text-primary);
+            color: var(--white);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+        }
+
+        .form-group select option {
+            background: var(--dark);
+        }
+
+        .form-group .hint {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            padding: 20px 35px 30px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-modal {
+            text-align: center;
+            padding: 50px 35px;
+        }
+
+        .success-icon {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 3rem;
+            color: var(--white);
+            animation: scaleIn 0.5s ease;
         }
-        .icon-btn:hover { background: var(--primary); }
-        .icon-btn.active { background: var(--primary); }
 
-        /* Status Stories */
-        .status-stories {
-            padding: 1rem;
-            background: var(--dark-surface);
-            border-bottom: 1px solid var(--dark-border);
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-modal h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .success-modal p {
+            color: var(--gray);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .success-modal .track-number {
+            display: inline-block;
+            background: var(--dark);
+            padding: 10px 25px;
+            border-radius: 10px;
+            color: var(--gold);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .success-modal .messengers {
             display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .status-stories::-webkit-scrollbar { display: none; }
-        .status-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .status-avatar-wrapper {
-            position: relative;
-            padding: 3px;
-            border-radius: 50%;
-            background: var(--gradient-2);
-        }
-        .status-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--dark-surface);
-        }
-        .status-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .status-add-btn {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 22px;
-            height: 22px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
+            gap: 15px;
             justify-content: center;
-            font-size: 0.7rem;
-            border: 2px solid var(--dark-surface);
+            margin-top: 25px;
         }
-        .status-name { font-size: 0.75rem; color: var(--text-secondary); max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Messages */
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .success-modal .messengers span {
+            padding: 8px 18px;
+            background: var(--dark);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
-        .chat-messages::-webkit-scrollbar { width: 6px; }
-        .chat-messages::-webkit-scrollbar-track { background: var(--dark-surface); }
-        .chat-messages::-webkit-scrollbar-thumb { background: var(--dark-border); border-radius: 3px; }
-        .message {
-            display: flex;
-            gap: 0.75rem;
-            max-width: 75%;
-            animation: messageSlide 0.3s ease-out;
-            position: relative;
+
+        .toast {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            padding: 18px 30px;
+            background: var(--dark-2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 0.9rem;
+            z-index: 99999;
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .toast.show {
+            transform: translateX(0);
         }
-        .message.own { align-self: flex-end; flex-direction: row-reverse; }
-        .message-avatar {
-            width: 36px;
-            height: 36px;
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(10, 10, 10, 0.3);
+            border-top-color: var(--dark);
             border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
         }
-        .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .message-content { display: flex; flex-direction: column; gap: 0.3rem; max-width: 100%; }
-        .message-header { display: flex; align-items: center; gap: 0.5rem; }
-        .message-sender { font-weight: 600; font-size: 0.85rem; color: var(--primary); }
-        .message-time { font-size: 0.7rem; color: var(--text-muted); }
-        .message-bubble {
-            padding: 0.75rem 1rem;
-            background: var(--dark-surface);
-            border-radius: 18px;
-            border-top-left-radius: 5px;
-            word-wrap: break-word;
-            position: relative;
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .message.own .message-bubble {
-            background: var(--gradient-1);
-            border-top-left-radius: 18px;
-            border-top-right-radius: 5px;
+
+        /* Product Detail Modal */
+        .product-detail-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 25px;
         }
-        .message-text { font-size: 0.95rem; line-height: 1.4; }
-        .voice-message {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            min-width: 200px;
+
+        .product-detail-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
         }
-        .voice-message audio { width: 100%; height: 35px; }
-        .circle-message {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            position: relative;
+
+        .product-detail-price {
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 20px;
         }
-        .circle-message video { width: 100%; height: 100%; object-fit: cover; }
-        .system-message {
-            align-self: center;
-            padding: 0.4rem 1rem;
-            background: var(--dark-surface);
+
+        .product-detail-description {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .product-detail-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: var(--dark);
             border-radius: 20px;
             font-size: 0.8rem;
-            color: var(--text-muted);
-            max-width: 100%;
-            text-align: center;
-        }
-        .message-deleted {
-            font-style: italic;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .message-actions {
-            display: none;
-            position: absolute;
-            top: -35px;
-            right: 0;
-            background: var(--dark-surface);
-            border-radius: 8px;
-            padding: 0.3rem;
-            gap: 0.3rem;
-            box-shadow: var(--shadow-lg);
-        }
-        .message:hover .message-actions { display: flex; }
-        .message.own .message-actions { right: auto; left: 0; }
-        .message-action-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .message-action-btn:hover { background: var(--dark-bg); color: var(--text-primary); }
-        
-        /* Reactions */
-        .message-reactions {
-            display: flex;
-            gap: 0.3rem;
-            flex-wrap: wrap;
-            margin-top: 0.3rem;
-        }
-        .reaction {
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 12px;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        .reaction:hover { background: var(--dark-border); }
-        .reaction.active { background: var(--primary); border-color: var(--primary); }
-        .reaction-count { font-size: 0.75rem; font-weight: 600; }
-        .reaction-picker {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 20px;
-            padding: 0.5rem;
-            display: none;
-            gap: 0.3rem;
-            box-shadow: var(--shadow-xl);
-            z-index: 100;
-        }
-        .reaction-picker.active { display: flex; }
-        .reaction-option {
-            font-size: 1.3rem;
-            cursor: pointer;
-            padding: 0.3rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .reaction-option:hover { background: var(--dark-bg); transform: scale(1.2); }
-
-        /* Input Area */
-        .chat-input-area {
-            padding: 1rem 1.5rem;
-            background: var(--dark-surface);
-            border-top: 1px solid var(--dark-border);
-        }
-        .input-tools {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .tool-btn {
-            width: 38px;
-            height: 38px;
-            background: var(--dark-bg);
-            border: none;
-            border-radius: 10px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .tool-btn:hover { background: var(--primary); transform: translateY(-2px); }
-        .tool-btn.active { background: var(--primary); }
-        .message-input-wrapper {
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-end;
-        }
-        .message-input-wrapper textarea {
-            flex: 1;
-            padding: 0.9rem;
-            background: var(--dark-bg);
-            border: 1px solid var(--dark-border);
-            border-radius: 18px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            resize: none;
-            font-family: inherit;
-            max-height: 120px;
-            min-height: 45px;
-        }
-        .message-input-wrapper textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .send-btn {
-            width: 45px;
-            height: 45px;
-            background: var(--gradient-1);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .send-btn:hover { transform: scale(1.1) rotate(15deg); }
-
-        /* Members & Chats List */
-        .members-list, .chats-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .member-item, .chat-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.9rem;
-            background: var(--dark-surface);
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .member-item:hover, .chat-item:hover {
-            transform: translateX(5px);
-            box-shadow: var(--shadow-lg);
-        }
-        .chat-item.unread { border-left: 3px solid var(--primary); }
-        .member-info, .chat-info { flex: 1; min-width: 0; }
-        .member-info h4, .chat-info h4 { margin-bottom: 0.25rem; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .member-info p, .chat-info p { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
-        .chat-time { font-size: 0.75rem; color: var(--text-muted); }
-        .chat-unread {
-            background: var(--primary);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 10px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content {
-            background: var(--dark-surface);
-            border-radius: 20px;
-            width: 95%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: modalSlide 0.3s ease-out;
-        }
-        .modal-content.small { max-width: 400px; }
-        .modal-content.full { max-width: 90%; max-height: 95%; }
-        @keyframes modalSlide {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid var(--dark-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .modal-header h2 { font-size: 1.3rem; }
-        .close-btn {
-            width: 36px;
-            height: 36px;
-            background: var(--dark-bg);
-            border: none;
-            border-radius: 10px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .close-btn:hover { background: var(--danger); }
-        .modal-body { padding: 1.25rem; }
-        .settings-section { margin-bottom: 1.5rem; }
-        .settings-section h3 { margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 1rem; }
-        .avatar-selector { display: flex; flex-direction: column; gap: 1rem; }
-        .current-avatar { display: flex; align-items: center; gap: 1rem; }
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: var(--dark-bg);
-            border-radius: 10px;
-        }
-        .avatar-option {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-        }
-        .avatar-option:hover { transform: scale(1.1); border-color: var(--primary); }
-        .avatar-option.selected {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-        .avatar-option img { width: 100%; height: 100%; object-fit: cover; }
-        .animation-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            background: var(--dark-bg);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-        .radio-option:hover { background: var(--dark-border); }
-        .radio-option input[type="radio"] { width: 18px; height: 18px; cursor: pointer; }
-
-        /* Voice Recorder */
-        .voice-recorder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .recording-indicator {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.9rem 1.5rem;
-            background: var(--danger);
-            border-radius: 50px;
-            animation: recordingPulse 1s ease-in-out infinite;
-        }
-        @keyframes recordingPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .recording-dot { animation: dotPulse 1s ease-in-out infinite; }
-        @keyframes dotPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-        }
-        .voice-controls { display: flex; gap: 1rem; }
-        .btn-record {
-            width: 70px;
-            height: 70px;
-            background: var(--gradient-2);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-record:hover { transform: scale(1.1); }
-        .voice-preview {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .voice-preview audio { width: 100%; }
-
-        /* Circle Recorder */
-        .circle-recorder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .circle-preview {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: var(--dark-bg);
-        }
-        .circle-preview video { width: 100%; height: 100%; object-fit: cover; }
-        .circle-timer {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-        .circle-controls { display: flex; gap: 1rem; }
-        .circle-preview-result {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
-        }
-        .circle-preview-result video {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
+        @media (max-width: 1024px) {
+            .about-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+            .hero h1 { font-size: 3.5rem; }
         }
 
-        /* Status Viewer */
-        .status-viewer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-        }
-        .status-viewer.active { display: flex; }
-        .status-viewer-header {
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
-        }
-        .status-viewer-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .status-viewer-content img,
-        .status-viewer-content video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .status-progress {
-            position: absolute;
-            top: 50px;
-            left: 1rem;
-            right: 1rem;
-            height: 3px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .status-progress-bar {
-            height: 100%;
-            background: white;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        /* Call Modal */
-        .call-modal {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-        }
-        .call-screen {
-            text-align: center;
-            padding: 2rem;
-        }
-        .call-avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin: 0 auto 1.5rem;
-            border: 4px solid rgba(255,255,255,0.2);
-            animation: pulse 2s ease-in-out infinite;
-        }
-        .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .call-name { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .call-status { font-size: 1rem; color: var(--text-secondary); margin-bottom: 3rem; }
-        .call-controls {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-        }
-        .call-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        .call-btn-end { background: var(--danger); color: white; }
-        .call-btn-mute { background: rgba(255,255,255,0.2); color: white; }
-        .call-btn:hover { transform: scale(1.1); }
-        .video-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem;
-            height: 100%;
-        }
-        .video-container {
-            position: relative;
-            background: var(--dark-bg);
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .video-label {
-            position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            background: rgba(0,0,0,0.6);
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }
-
-        /* Emoji Picker */
-        .emoji-picker {
-            position: absolute;
-            bottom: 80px;
-            left: 20px;
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 15px;
-            padding: 1rem;
-            display: none;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 0.5rem;
-            max-width: 350px;
-            box-shadow: var(--shadow-xl);
-            z-index: 100;
-        }
-        .emoji-picker.active { display: grid; }
-        .emoji-item {
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            text-align: center;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .emoji-item:hover { background: var(--dark-bg); transform: scale(1.2); }
-
-        /* Notifications */
-        .notifications-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .notification {
-            padding: 1rem 1.5rem;
-            background: var(--dark-surface);
-            border-radius: 10px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            animation: notificationSlide 0.3s ease-out;
-            min-width: 300px;
-        }
-        @keyframes notificationSlide {
-            from { opacity: 0; transform: translateX(100%); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .notification.success { border-left: 4px solid var(--success); }
-        .notification.error { border-left: 4px solid var(--danger); }
-        .notification.info { border-left: 4px solid var(--primary); }
-        .notification i { font-size: 1.5rem; }
-        .notification.success i { color: var(--success); }
-        .notification.error i { color: var(--danger); }
-        .notification.info i { color: var(--primary); }
-
-        /* Delete Message Modal */
-        .delete-options {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .delete-option {
-            padding: 1rem;
-            background: var(--dark-bg);
-            border: 2px solid var(--dark-border);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-        .delete-option:hover {
-            border-color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
-        }
-        .delete-option.danger { border-color: var(--danger); }
-        .delete-option h4 { margin-bottom: 0.3rem; color: var(--danger); }
-        .delete-option p { font-size: 0.85rem; color: var(--text-muted); }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: fixed;
-                bottom: 0;
-                height: 65px;
-                flex-direction: row;
-                border-right: none;
-                border-top: 1px solid var(--dark-border);
-                z-index: 100;
-            }
-            .sidebar-header { display: none; }
-            .sidebar-nav {
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 0.5rem;
-            }
-            .nav-item {
-                flex-direction: column;
-                padding: 0.5rem;
-                font-size: 0.7rem;
-                gap: 0.3rem;
-            }
-            .nav-item i { font-size: 1.3rem; }
-            .group-info { display: none; }
-            .main-content { margin-bottom: 65px; }
-            .message { max-width: 85%; }
-            .chat-header { padding: 0.9rem 1rem; }
-            .chat-input-area { padding: 0.75rem 1rem; }
-            .video-grid { grid-template-columns: 1fr; }
+            header { padding: 15px 20px; }
+            nav ul { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .about { padding: 80px 20px; }
+            .about-grid { grid-template-columns: 1fr; }
+            .products { padding: 80px 20px; }
+            .products-grid { grid-template-columns: 1fr; }
+            .stats { padding: 60px 20px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .tracking { padding: 80px 20px; }
+            .tracking-box { padding: 30px 20px; }
+            .tracking-input { flex-direction: column; }
+            .guarantee { padding: 80px 20px; }
+            .guarantee-box { padding: 40px 25px; }
+            .section-header h2 { font-size: 2.2rem; }
+            .modal { margin: 10px; }
+            .modal-body, .modal-header, .modal-footer { padding-left: 20px; padding-right: 20px; }
+            .product-detail-image { height: 300px; }
+            .product-detail-title { font-size: 1.5rem; }
+            footer { padding: 40px 20px; }
         }
+
+        @media (max-width: 480px) {
+            .logo { font-size: 1.8rem; }
+            .stat-item h3 { font-size: 2.5rem; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="screen active">
-        <div class="login-container">
-            <div class="logo">
-                <i class="fas fa-crown"></i>
-                <h1>Милорды</h1>
-                <p>Элитный мессенджер</p>
+    <div class="preloader" id="preloader">
+        <span class="preloader-text">CymkiBY</span>
+    </div>
+
+    <header id="header">
+        <a href="#" class="logo">CymkiBY</a>
+        <nav>
+            <ul>
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#catalog">Каталог</a></li>
+                <li><a href="#tracking">Отследить</a></li>
+                <li><a href="#guarantee">Гарантии</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-badge">Премиум качество с 2025 года</span>
+            <h1>Эксклюзивные <span class="gold">сумки</span><br>со всего мира</h1>
+            <p>Мы занимаемся выкупом премиальных сумок из стран мира и доставляем их прямо к вам в Россию. Более 1 года безупречной работы и тысячи довольных клиентов.</p>
+            <div class="hero-buttons">
+                <a href="#catalog" class="btn btn-gold">Смотреть каталог</a>
+                <a href="#tracking" class="btn btn-outline">Отследить заказ</a>
             </div>
-            <form id="loginForm">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="loginUsername" placeholder="Логин" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" placeholder="Пароль" required>
-                </div>
-                <button type="submit" class="btn-primary">Войти</button>
-            </form>
         </div>
-    </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
 
-    <!-- Main Screen -->
-    <div id="mainScreen" class="screen">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="user-profile" id="currentUserProfile">
-                    <div class="avatar animated-avatar pulse online" id="sidebarAvatar">
-                        <img src="" alt="Avatar">
-                    </div>
-                    <div class="user-info">
-                        <h3 id="currentUserName">Имя пользователя</h3>
-                        <span class="status">В сети</span>
-                    </div>
-                </div>
-                <button class="settings-btn" id="openSettings">
-                    <i class="fas fa-cog"></i>
-                </button>
+    <section class="about" id="about">
+        <div class="section-header">
+            <span class="subtitle">Почему мы</span>
+            <h2>Наши <span class="gold">преимущества</span></h2>
+            <p>Уже более 1 года мы занимаемся выкупом сумок из стран мира и доставляем их в Российскую Федерацию с полной гарантией</p>
+        </div>
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-globe"></i></div>
+                <h3>Выкуп со всего мира</h3>
+                <p>Мы работаем с лучшими поставщиками из Европы, Америки и Азии. Находим самые редкие и эксклюзивные модели для наших клиентов.</p>
             </div>
-
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-tab="chat">
-                    <i class="fas fa-comments"></i>
-                    <span>Чат</span>
-                    <span class="badge" id="chatBadge" style="display: none;">0</span>
-                </a>
-                <a href="#" class="nav-item" data-tab="chats">
-                    <i class="fas fa-comment-dots"></i>
-                    <span>Личные</span>
-                    <span class="badge" id="chatsBadge" style="display: none;">0</span>
-                </a>
-                <a href="#" class="nav-item" data-tab="members">
-                    <i class="fas fa-users"></i>
-                    <span>Участники</span>
-                </a>
-                <a href="#" class="nav-item" data-tab="status">
-                    <i class="fas fa-circle"></i>
-                    <span>Статусы</span>
-                </a>
-            </nav>
-
-            <div class="group-info">
-                <h4><i class="fas fa-crown"></i> Милорды</h4>
-                <p id="onlineCount">0 участников онлайн</p>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-shipping-fast"></i></div>
+                <h3>Быстрая доставка</h3>
+                <p>Доставка по России через проверенные службы: CDEK, Почта России, BoxBerry. Отслеживание на каждом этапе пути.</p>
             </div>
-        </aside>
-
-        <main class="main-content">
-            <!-- Group Chat Tab -->
-            <div id="chatTab" class="tab-content active">
-                <header class="chat-header">
-                    <div class="chat-title">
-                        <i class="fas fa-crown crown-icon"></i>
-                        <div class="chat-header-info">
-                            <h2>Милорды</h2>
-                            <span class="chat-header-subtitle" id="groupSubtitle">Групповой чат</span>
-                        </div>
-                        <span class="typing-indicator" id="typingIndicator" style="display: none;">кто-то печатает...</span>
-                    </div>
-                    <div class="chat-actions">
-                        <button id="toggleNotifications" class="icon-btn" title="Уведомления">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                    </div>
-                </header>
-
-                <div class="status-stories" id="statusStories">
-                    <!-- Statuses will be added here -->
-                </div>
-
-                <div class="chat-messages" id="chatMessages"></div>
-
-                <div class="chat-input-area" style="position: relative;">
-                    <div class="emoji-picker" id="emojiPicker"></div>
-                    <div class="input-tools">
-                        <button id="emojiBtn" class="tool-btn" title="Эмодзи">
-                            <i class="far fa-smile"></i>
-                        </button>
-                        <button id="voiceBtn" class="tool-btn" title="Голосовое сообщение">
-                            <i class="fas fa-microphone"></i>
-                        </button>
-                        <button id="circleBtn" class="tool-btn" title="Кружочек">
-                            <i class="fas fa-circle"></i>
-                        </button>
-                        <button id="statusBtn" class="tool-btn" title="Добавить статус">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="message-input-wrapper">
-                        <textarea id="messageInput" placeholder="Напишите сообщение..." rows="1"></textarea>
-                        <button id="sendBtn" class="send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>100% Гарантия</h3>
+                <p>Если что-то случится с вашим заказом — мы гарантируем полный возврат средств в размере 100% от переведённой суммы.</p>
             </div>
+        </div>
+    </section>
 
-            <!-- Private Chats Tab -->
-            <div id="chatsTab" class="tab-content">
-                <header class="chat-header">
-                    <h2>Личные сообщения</h2>
-                </header>
-                <div class="chats-list" id="chatsList"></div>
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>1+</h3>
+                <p>Лет на рынке</p>
             </div>
-
-            <!-- Private Chat View -->
-            <div id="privateChatTab" class="tab-content">
-                <header class="chat-header">
-                    <div class="chat-title">
-                        <button class="icon-btn" id="backToChats">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div class="avatar" id="privateChatAvatar">
-                            <img src="" alt="">
-                        </div>
-                        <div class="chat-header-info">
-                            <h2 id="privateChatName">Имя</h2>
-                            <span class="chat-header-subtitle" id="privateChatStatus">В сети</span>
-                        </div>
-                    </div>
-                    <div class="chat-actions">
-                        <button id="callAudioBtn" class="icon-btn" title="Аудиозвонок">
-                            <i class="fas fa-phone"></i>
-                        </button>
-                        <button id="callVideoBtn" class="icon-btn" title="Видеозвонок">
-                            <i class="fas fa-video"></i>
-                        </button>
-                    </div>
-                </header>
-                <div class="chat-messages" id="privateChatMessages"></div>
-                <div class="chat-input-area" style="position: relative;">
-                    <div class="message-input-wrapper">
-                        <textarea id="privateMessageInput" placeholder="Напишите сообщение..." rows="1"></textarea>
-                        <button id="privateSendBtn" class="send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Довольных клиентов</p>
             </div>
-
-            <!-- Members Tab -->
-            <div id="membersTab" class="tab-content">
-                <header class="chat-header">
-                    <h2>Участники группы</h2>
-                </header>
-                <div class="members-list" id="membersList"></div>
+            <div class="stat-item">
+                <h3>15+</h3>
+                <p>Стран поставки</p>
             </div>
-
-            <!-- Status Tab -->
-            <div id="statusTab" class="tab-content">
-                <header class="chat-header">
-                    <h2>Статусы участников</h2>
-                </header>
-                <div class="members-list" id="statusList"></div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Гарантия возврата</p>
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
+    <section class="products" id="catalog">
+        <div class="section-header">
+            <span class="subtitle">Каталог</span>
+            <h2>Наши <span class="gold">сумки</span></h2>
+            <p>Выберите сумку вашей мечты из нашей коллекции эксклюзивных моделей</p>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <div class="no-products">
+                <i class="fas fa-box-open"></i>
+                <p>Загрузка товаров...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="tracking" id="tracking">
+        <div class="section-header">
+            <span class="subtitle">Отслеживание</span>
+            <h2>Отследить <span class="gold">заказ</span></h2>
+            <p>Введите ваш трек-номер, чтобы узнать текущий статус доставки</p>
+        </div>
+        <div class="tracking-box">
+            <div class="tracking-input">
+                <input type="text" id="trackInput" placeholder="Введите трек-номер...">
+                <button onclick="trackOrder()"><i class="fas fa-search"></i> Найти</button>
+            </div>
+            <div class="tracking-result" id="trackingResult">
+                <div class="tracking-status" id="trackingStatus"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="guarantee" id="guarantee">
+        <div class="guarantee-box">
+            <div class="shield-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Гарантия <span style="color: var(--gold);">100% возврата</span></h3>
+            <p>
+                Мы работаем на рынке уже <span class="highlight">более 1 года</span> и за это время заработали безупречную репутацию. 
+                Мы занимаемся выкупом сумок из стран мира и доставляем их в Российскую Федерацию. 
+                Если по какой-либо причине ваш заказ будет утерян или повреждён — мы гарантируем 
+                <span class="highlight">полный возврат средств в 100% размере</span> от переведённой суммы. 
+                Ваше доверие — наш главный приоритет.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <a href="#" class="logo">CymkiBY</a>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-telegram"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+            <a href="#"><i class="fas fa-comment"></i></a>
+        </div>
+        <p>&copy; 2025-2026 CymkiBY. Все права защищены. Премиум сумки со всего мира.</p>
+        
+        <div class="footer-support">
+            <a href="#" onclick="openSupportModal(); return false;">
+                <i class="fas fa-headset"></i>
+                <span>Техническая поддержка</span>
+            </a>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
             <div class="modal-header">
-                <h2>Настройки профиля</h2>
-                <button class="close-btn" id="closeSettings">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3>Оформление заказа</h3>
+                <button class="modal-close" onclick="closeModal('orderModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="settings-section">
-                    <h3>Аватар</h3>
-                    <div class="avatar-selector">
-                        <div class="current-avatar">
-                            <div class="avatar animated-avatar large pulse" id="settingsAvatar">
-                                <img src="" alt="Avatar">
-                            </div>
-                            <button id="changeAvatarBtn" class="btn-secondary">
-                                <i class="fas fa-camera"></i> Изменить
-                            </button>
-                        </div>
-                        <div class="avatar-grid" id="avatarGrid" style="display: none;"></div>
+                <div id="orderProductInfo" style="margin-bottom:25px; padding:15px; background:var(--dark); border-radius:10px; border:1px solid rgba(212,175,55,0.1);"></div>
+                <form id="orderForm">
+                    <input type="hidden" id="orderProductId">
+                    <input type="hidden" id="orderProductName">
+                    <input type="hidden" id="orderProductPrice">
+                    
+                    <div class="form-group">
+                        <label>ФИО полностью *</label>
+                        <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required>
                     </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Имя</h3>
-                    <div class="input-group">
-                        <input type="text" id="settingsName" placeholder="Ваше имя">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" placeholder="example@mail.ru" required>
+                        <div class="hint">На этот email придёт подтверждение заказа</div>
                     </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Статус</h3>
-                    <div class="input-group">
-                        <input type="text" id="settingsStatus" placeholder="Ваш статус">
+                    <div class="form-group">
+                        <label>Номер телефона *</label>
+                        <input type="tel" id="phone" placeholder="+7 (999) 123-45-67" required>
                     </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Анимация аватара</h3>
-                    <div class="animation-options">
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="pulse" checked>
-                            <span>Пульсация</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="rotate">
-                            <span>Вращение</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="bounce">
-                            <span>Прыжки</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="glow">
-                            <span>Свечение</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="rainbow">
-                            <span>Радуга</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="animation" value="none">
-                            <span>Без анимации</span>
-                        </label>
+                    <div class="form-group">
+                        <label>Страна доставки *</label>
+                        <select id="country" required onchange="updateDelivery()">
+                            <option value="">Выберите страну</option>
+                            <option value="russia">Россия</option>
+                            <option value="usa">США (Америка)</option>
+                        </select>
                     </div>
-                </div>
-
-                <button id="saveSettingsBtn" class="btn-primary">Сохранить изменения</button>
+                    <div class="form-group" id="deliveryGroup" style="display:none;">
+                        <label>Служба доставки *</label>
+                        <select id="delivery" required>
+                            <option value="">Выберите службу доставки</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Адрес доставки *</label>
+                        <input type="text" id="address" placeholder="Город, улица, дом, квартира" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Комментарий к заказу</label>
+                        <textarea id="comment" rows="3" placeholder="Дополнительные пожелания..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-submit" id="submitOrder" onclick="submitOrder()">
+                    Забронировать сумку
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Voice Modal -->
-    <div id="voiceModal" class="modal">
-        <div class="modal-content small">
-            <div class="modal-header">
-                <h2>Голосовое сообщение</h2>
-                <button class="close-btn" id="closeVoiceModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body voice-recorder">
-                <div class="recording-indicator" id="recordingIndicator" style="display: none;">
-                    <i class="fas fa-circle recording-dot"></i>
-                    <span>Запись...</span>
-                    <span id="recordingTime">0:00</span>
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="success-modal">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
                 </div>
-                <div class="voice-controls">
-                    <button id="startRecording" class="btn-record">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button id="stopRecording" class="btn-record" style="display: none;">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-                <div class="voice-preview" id="voicePreview" style="display: none;">
-                    <audio id="voiceAudio" controls></audio>
-                    <button id="sendVoice" class="btn-primary">Отправить</button>
-                </div>
+                <h3>Сумка успешно забронирована!</h3>
+                <p>Ваш заказ принят в обработку. Письмо с подтверждением отправлено на ваш email.</p>
+                <p style="margin-top:20px;">Ваш трек-номер для отслеживания:</p>
+                <div class="track-number" id="successTrackNumber">—</div>
+                <p style="font-size:0.85rem; margin-top:15px;">Сохраните трек-номер — вы сможете отслеживать статус заказа на сайте</p>
+                <button class="btn-submit" style="margin-top:25px;" onclick="closeModal('successModal')">Отлично!</button>
             </div>
         </div>
     </div>
 
-    <!-- Circle Modal -->
-    <div id="circleModal" class="modal">
-        <div class="modal-content small">
+    <div class="modal-overlay" id="productDetailModal">
+        <div class="modal" style="max-width: 700px;">
             <div class="modal-header">
-                <h2>Кружочек</h2>
-                <button class="close-btn" id="closeCircleModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body circle-recorder">
-                <div class="circle-preview">
-                    <video id="circleVideo" autoplay muted playsinline></video>
-                    <div class="circle-timer" id="circleTimer">0:00</div>
-                </div>
-                <div class="circle-controls">
-                    <button id="startCircle" class="btn-record">
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <button id="stopCircle" class="btn-record" style="display: none;">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-                <div class="circle-preview-result" id="circlePreviewResult" style="display: none;">
-                    <video id="circlePreviewVideo" controls></video>
-                    <button id="sendCircle" class="btn-primary">Отправить</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Status Upload Modal -->
-    <div id="statusUploadModal" class="modal">
-        <div class="modal-content small">
-            <div class="modal-header">
-                <h2>Добавить статус</h2>
-                <button class="close-btn" id="closeStatusUpload">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3>Детали товара</h3>
+                <button class="modal-close" onclick="closeModal('productDetailModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="settings-section">
-                    <h3>Выберите фото или видео</h3>
-                    <input type="file" id="statusFileInput" accept="image/*,video/*" style="display: none;">
-                    <button id="selectStatusFile" class="btn-primary" style="width: 100%;">
-                        <i class="fas fa-upload"></i> Выбрать файл
-                    </button>
-                    <div id="statusPreview" style="margin-top: 1rem; display: none;">
-                        <img id="statusImagePreview" style="max-width: 100%; border-radius: 10px; display: none;">
-                        <video id="statusVideoPreview" controls style="max-width: 100%; border-radius: 10px; display: none;"></video>
-                    </div>
-                </div>
-                <button id="uploadStatus" class="btn-primary" style="width: 100%; display: none;">
-                    <i class="fas fa-paper-plane"></i> Опубликовать статус
+                <img src="" alt="" class="product-detail-image" id="detailImage">
+                <div id="detailBadge"></div>
+                <h2 class="product-detail-title" id="detailTitle"></h2>
+                <div class="product-detail-price" id="detailPrice"></div>
+                <div class="product-detail-description" id="detailDescription"></div>
+                <button class="btn btn-gold" onclick="buyFromDetail()" style="width: 100%;">
+                    <i class="fas fa-shopping-bag"></i> Заказать эту сумку
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Status Viewer -->
-    <div id="statusViewer" class="status-viewer">
-        <div class="status-viewer-header">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="avatar" id="statusViewerAvatar">
-                    <img src="" alt="">
-                </div>
-                <div>
-                    <div id="statusViewerName" style="font-weight: 600;"></div>
-                    <div id="statusViewerTime" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
-                </div>
-            </div>
-            <button class="close-btn" id="closeStatusViewer">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="status-progress">
-            <div class="status-progress-bar" id="statusProgressBar"></div>
-        </div>
-        <div class="status-viewer-content" id="statusViewerContent"></div>
-    </div>
-
-    <!-- Call Modal -->
-    <div id="callModal" class="modal call-modal">
-        <div class="modal-content full" style="background: transparent; box-shadow: none;">
-            <div class="call-screen" id="callScreen">
-                <div class="call-avatar">
-                    <img id="callAvatar" src="" alt="">
-                </div>
-                <div class="call-name" id="callName">Имя</div>
-                <div class="call-status" id="callStatus">Звонок...</div>
-                <div class="call-controls">
-                    <button class="call-btn call-btn-mute" id="muteCallBtn">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="call-btn call-btn-end" id="endCallBtn">
-                        <i class="fas fa-phone-slash"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="video-grid" id="videoGrid" style="display: none;">
-                <div class="video-container">
-                    <video id="localVideo" autoplay muted playsinline></video>
-                    <div class="video-label">Вы</div>
-                </div>
-                <div class="video-container">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                    <div class="video-label" id="remoteVideoLabel">Собеседник</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Message Modal -->
-    <div id="deleteMessageModal" class="modal">
-        <div class="modal-content small">
+    <div class="modal-overlay" id="supportModal">
+        <div class="modal">
             <div class="modal-header">
-                <h2>Удалить сообщение</h2>
-                <button class="close-btn" id="closeDeleteModal">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3><i class="fas fa-headset" style="color: var(--gold); margin-right: 10px;"></i>Техническая поддержка</h3>
+                <button class="modal-close" onclick="closeModal('supportModal')">&times;</button>
             </div>
-            <div class="modal-body">
-                <div class="delete-options">
-                    <div class="delete-option" id="deleteForMe">
-                        <h4><i class="fas fa-user"></i> Удалить у себя</h4>
-                        <p>Сообщение исчезнет только у вас</p>
-                    </div>
-                    <div class="delete-option danger" id="deleteForEveryone">
-                        <h4><i class="fas fa-users"></i> Удалить у всех</h4>
-                        <p>Сообщение будет удалено у всех участников чата</p>
-                    </div>
+            <div class="modal-body" style="text-align: center;">
+                <div style="margin-bottom: 30px;">
+                    <i class="fas fa-envelope" style="font-size: 4rem; color: var(--gold); margin-bottom: 20px;"></i>
+                    <h4 style="font-size: 1.2rem; margin-bottom: 10px;">Напишите нам</h4>
+                    <p style="color: var(--gray); margin-bottom: 20px;">Наша команда поддержки готова помочь вам</p>
+                    <a href="mailto:cymkiby@cymkiby.ru" style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--dark); text-decoration: none; border-radius: 50px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s;">
+                        <i class="fas fa-envelope" style="margin-right: 8px;"></i>почта :cymkiby@cymkiby.ru
+                         <a href="mailto:cymkiby_bot" style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--dark); text-decoration: none; border-radius: 50px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s;">
+                         <i class="fas fa-envelope" style="margin-right: 8px;"></i>бот в телеграмме: cymkiby_bot
+                        
+                    </a>
+                </div>
+                <div style="border-top: 1px solid rgba(212, 175, 55, 0.1); padding-top: 25px;">
+                    <h4 style="margin-bottom: 15px; color: var(--gold);">Часы работы поддержки</h4>
+                    <p style="color: var(--gray);">Пн-Пт: 9:00 - 20:00</p>
+                    <p style="color: var(--gray);">Сб-Вс: 10:00 - 18:00</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notifications -->
-    <div id="notifications" class="notifications-container"></div>
+    <div class="toast" id="toast"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <script>
-        // Firebase Config - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ!
         const firebaseConfig = {
-            apiKey: "AIzaSyDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            authDomain: "dtv-bank.firebaseapp.com",
-            databaseURL: "https://dtv-bank-default-rtdb.firebaseio.com",
-            projectId: "dtv-bank",
-            storageBucket: "dtv-bank.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef123456"
+            databaseURL: "https://cymkiby-default-rtdb.firebaseio.com/"
         };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
-        // Global variables
-        let currentUser = null;
-        let currentUserId = null;
-        let currentChatId = null;
-        let currentChatType = 'group'; // 'group' or 'private'
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let videoStream = null;
-        let recordingInterval = null;
-        let circleRecordingInterval = null;
-        let typingTimeout = null;
-        let notificationsEnabled = true;
-        let messageToDelete = null;
-        let peerConnection = null;
-        let localStream = null;
-        let currentCallId = null;
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            console.log('✅ Firebase подключен');
+        } catch (error) {
+            console.error('Ошибка Firebase:', error);
+        }
 
-        const availableAvatars = [
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Felix',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Aneka',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Leo',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Mia',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Max',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Luna',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Oscar',
-            'https://api.dicebear.com/7.6/adventurer/svg?seed=Lily',
-            'https://api.dicebear.com/7.6/bottts/svg?seed=Robot1',
-            'https://api.dicebear.com/7.6/bottts/svg?seed=Robot2',
-            'https://api.dicebear.com/7.6/pixel-art/svg?seed=Pixel1',
-            'https://api.dicebear.com/7.6/pixel-art/svg?seed=Pixel2',
-            'https://api.dicebear.com/7.6/avataaars/svg?seed=Av1',
-            'https://api.dicebear.com/7.6/avataaars/svg?seed=Av2',
-            'https://api.dicebear.com/7.6/lorelei/svg?seed=Lor1',
-            'https://api.dicebear.com/7.6/lorelei/svg?seed=Lor2'
-        ];
+        (function() {
+            emailjs.init("u6BcJRgMxMl3oKZEX");
+            console.log('✅ EmailJS инициализирован');
+        })();
 
-        const emojis = ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','😘','🥰','','😙','😚','🙂','🤗','','🤔','','😐','😑','😶','🙄','','😣','😥','😮','🤐','😯','😪','😫','🥱','','😌','😛','😜','😝','','😒','😓','😔','😕','🙃','','😲','☹️','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','🥵','','😳','','😵','','😠','😡','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🥳','🥺','🤠','🤡','🤥','🤫','🤭','🧐','🤓'];
-        const reactionEmojis = ['👍','👎','❤️','😂','😮','😢','😡'];
+        let currentProductForOrder = null;
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            initEventListeners();
-            initEmojiPicker();
-            
-            // Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 1500);
+        });
+
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
             }
         });
 
-        function checkAuth() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                currentUserId = currentUser.id;
-                showMainScreen();
-                loadUserData();
-                loadGroupMessages();
-                loadMembers();
-                loadChats();
-                loadStatuses();
-                setupRealtimeListeners();
-                updateUserPresence();
-            }
-        }
-
-        function initEventListeners() {
-            // Login
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Settings
-            document.getElementById('openSettings').addEventListener('click', openSettings);
-            document.getElementById('closeSettings').addEventListener('click', closeSettings);
-            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
-            document.getElementById('changeAvatarBtn').addEventListener('click', toggleAvatarGrid);
-            
-            // Navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const tab = this.getAttribute('data-tab');
-                    switchTab(tab);
-                });
-            });
-            
-            // Group chat
-            document.getElementById('sendBtn').addEventListener('click', sendGroupMessage);
-            document.getElementById('messageInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendGroupMessage();
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
-            document.getElementById('messageInput').addEventListener('input', handleTyping);
-            
-            // Private chat
-            document.getElementById('privateSendBtn').addEventListener('click', sendPrivateMessage);
-            document.getElementById('privateMessageInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendPrivateMessage();
-                }
-            });
-            document.getElementById('backToChats').addEventListener('click', () => switchTab('chats'));
-            
-            // Tools
-            document.getElementById('emojiBtn').addEventListener('click', toggleEmojiPicker);
-            document.getElementById('voiceBtn').addEventListener('click', openVoiceModal);
-            document.getElementById('circleBtn').addEventListener('click', openCircleModal);
-            document.getElementById('statusBtn').addEventListener('click', openStatusUpload);
-            
-            // Voice
-            document.getElementById('closeVoiceModal').addEventListener('click', closeVoiceModal);
-            document.getElementById('startRecording').addEventListener('click', startVoiceRecording);
-            document.getElementById('stopRecording').addEventListener('click', stopVoiceRecording);
-            document.getElementById('sendVoice').addEventListener('click', sendVoiceMessage);
-            
-            // Circle
-            document.getElementById('closeCircleModal').addEventListener('click', closeCircleModal);
-            document.getElementById('startCircle').addEventListener('click', startCircleRecording);
-            document.getElementById('stopCircle').addEventListener('click', stopCircleRecording);
-            document.getElementById('sendCircle').addEventListener('click', sendCircleMessage);
-            
-            // Status
-            document.getElementById('closeStatusUpload').addEventListener('click', closeStatusUpload);
-            document.getElementById('selectStatusFile').addEventListener('click', () => document.getElementById('statusFileInput').click());
-            document.getElementById('statusFileInput').addEventListener('change', handleStatusFileSelect);
-            document.getElementById('uploadStatus').addEventListener('click', uploadStatus);
-            document.getElementById('closeStatusViewer').addEventListener('click', closeStatusViewer);
-            
-            // Call
-            document.getElementById('endCallBtn').addEventListener('click', endCall);
-            document.getElementById('muteCallBtn').addEventListener('click', toggleMute);
-            document.getElementById('callAudioBtn').addEventListener('click', () => startCall('audio'));
-            document.getElementById('callVideoBtn').addEventListener('click', () => startCall('video'));
-            
-            // Delete
-            document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
-            document.getElementById('deleteForMe').addEventListener('click', () => deleteMessage('me'));
-            document.getElementById('deleteForEveryone').addEventListener('click', () => deleteMessage('everyone'));
-            
-            // Notifications
-            document.getElementById('toggleNotifications').addEventListener('click', toggleNotifications);
-        }
-
-        function initEmojiPicker() {
-            const picker = document.getElementById('emojiPicker');
-            emojis.forEach(emoji => {
-                const span = document.createElement('span');
-                span.className = 'emoji-item';
-                span.textContent = emoji;
-                span.onclick = () => {
-                    const input = currentChatType === 'group' ? 
-                        document.getElementById('messageInput') : 
-                        document.getElementById('privateMessageInput');
-                    input.value += emoji;
-                    input.focus();
-                };
-                picker.appendChild(span);
-            });
-        }
-
-        function toggleEmojiPicker() {
-            document.getElementById('emojiPicker').classList.toggle('active');
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-                const userSnapshot = await database.ref('users').orderByChild('login').equalTo(username).once('value');
-                let foundUser = null;
-                let foundId = null;
-
-                userSnapshot.forEach(child => {
-                    const userData = child.val();
-                    if (userData.password === password) {
-                        foundUser = userData;
-                        foundId = child.key;
-                    }
-                });
-
-                if (foundUser) {
-                    currentUser = { ...foundUser, id: foundId };
-                    currentUserId = foundId;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showMainScreen();
-                    loadUserData();
-                    loadGroupMessages();
-                    loadMembers();
-                    loadChats();
-                    loadStatuses();
-                    setupRealtimeListeners();
-                    updateUserPresence();
-                    showNotification('Добро пожаловать, ' + foundUser.name + '!', 'success');
-                    addSystemMessage('group', foundUser.name + ' вошёл в чат');
-                } else {
-                    showNotification('Неверный логин или пароль', 'error');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showNotification('Ошибка входа: ' + error.message, 'error');
-            }
-        }
-
-        function showMainScreen() {
-            document.getElementById('loginScreen').classList.remove('active');
-            document.getElementById('mainScreen').classList.add('active');
-        }
-
-        function loadUserData() {
-            document.getElementById('currentUserName').textContent = currentUser.name || currentUser.login;
-            document.getElementById('sidebarAvatar').querySelector('img').src = currentUser.avatar || availableAvatars[0];
-            document.getElementById('sidebarAvatar').className = 'avatar animated-avatar ' + (currentUser.animation || 'pulse') + ' online';
-            document.getElementById('settingsAvatar').querySelector('img').src = currentUser.avatar || availableAvatars[0];
-            document.getElementById('settingsAvatar').className = 'avatar animated-avatar large ' + (currentUser.animation || 'pulse');
-            document.getElementById('settingsName').value = currentUser.name || '';
-            document.getElementById('settingsStatus').value = currentUser.status || '';
-            const animRadio = document.querySelector(`input[name="animation"][value="${currentUser.animation || 'pulse'}"]`);
-            if (animRadio) animRadio.checked = true;
-        }
-
-        // Group Messages
-        function loadGroupMessages() {
-            database.ref('messages/group').orderByChild('timestamp').limitToLast(100).once('value').then(snapshot => {
-                const messagesContainer = document.getElementById('chatMessages');
-                messagesContainer.innerHTML = '';
-                snapshot.forEach(child => {
-                    const msg = child.val();
-                    if (!msg.deletedFor || !msg.deletedFor.includes(currentUserId)) {
-                        renderMessage(msg, 'group', child.key);
-                    }
-                });
-                scrollToBottom('chatMessages');
-            });
-        }
-
-        function sendGroupMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const messageData = {
-                type: 'text',
-                text: text,
-                senderId: currentUserId,
-                senderName: currentUser.name || currentUser.login,
-                senderAvatar: currentUser.avatar || availableAvatars[0],
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                chatType: 'group',
-                reactions: {}
-            };
-
-            database.ref('messages/group').push(messageData);
-            input.value = '';
-            database.ref('typing/group/' + currentUserId).remove();
-        }
-
-        // Private Messages
-        function loadChats() {
-            database.ref('privateChats').once('value').then(snapshot => {
-                const chatsList = document.getElementById('chatsList');
-                chatsList.innerHTML = '';
-                
-                snapshot.forEach(child => {
-                    const chatId = child.key;
-                    const participants = child.val().participants || {};
-                    
-                    // Check if current user is in this chat
-                    if (participants[currentUserId]) {
-                        const otherUserId = Object.keys(participants).find(id => id !== currentUserId);
-                        
-                        database.ref('users/' + otherUserId).once('value').then(userSnap => {
-                            const otherUser = userSnap.val();
-                            if (otherUser) {
-                                const chatItem = document.createElement('div');
-                                chatItem.className = 'chat-item';
-                                chatItem.onclick = () => openPrivateChat(otherUserId, otherUser);
-                                
-                                const lastMessage = child.val().lastMessage || {};
-                                const time = lastMessage.timestamp ? new Date(lastMessage.timestamp).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}) : '';
-                                
-                                chatItem.innerHTML = `
-                                    <div class="avatar ${otherUser.online ? 'online' : ''}">
-                                        <img src="${otherUser.avatar || availableAvatars[0]}" alt="${otherUser.name}">
-                                    </div>
-                                    <div class="chat-info">
-                                        <h4>${otherUser.name || otherUser.login}</h4>
-                                        <p>${lastMessage.text || 'Нет сообщений'}</p>
-                                    </div>
-                                    <div class="chat-meta">
-                                        <span class="chat-time">${time}</span>
-                                        ${child.val().unreadCount && child.val().unreadCount[currentUserId] ? `<span class="chat-unread">${child.val().unreadCount[currentUserId]}</span>` : ''}
-                                    </div>
-                                `;
-                                chatsList.appendChild(chatItem);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        function openPrivateChat(userId, userData) {
-            currentChatId = userId;
-            currentChatType = 'private';
-            
-            document.getElementById('privateChatName').textContent = userData.name || userData.login;
-            document.getElementById('privateChatAvatar').querySelector('img').src = userData.avatar || availableAvatars[0];
-            document.getElementById('privateChatStatus').textContent = userData.online ? 'В сети' : 'Не в сети';
-            
-            switchTab('privateChat');
-            loadPrivateMessages(userId);
-        }
-
-        function loadPrivateMessages(userId) {
-            const chatId = getChatId(currentUserId, userId);
-            database.ref('messages/private/' + chatId).orderByChild('timestamp').limitToLast(100).once('value').then(snapshot => {
-                const container = document.getElementById('privateChatMessages');
-                container.innerHTML = '';
-                snapshot.forEach(child => {
-                    const msg = child.val();
-                    if (!msg.deletedFor || !msg.deletedFor.includes(currentUserId)) {
-                        renderMessage(msg, 'private', child.key);
-                    }
-                });
-                scrollToBottom('privateChatMessages');
-            });
-            
-            // Mark as read
-            database.ref('privateChats/' + chatId + '/unreadCount/' + currentUserId).remove();
-        }
-
-        function sendPrivateMessage() {
-            if (!currentChatId) return;
-            
-            const input = document.getElementById('privateMessageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const chatId = getChatId(currentUserId, currentChatId);
-            const messageData = {
-                type: 'text',
-                text: text,
-                senderId: currentUserId,
-                senderName: currentUser.name || currentUser.login,
-                senderAvatar: currentUser.avatar || availableAvatars[0],
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                chatType: 'private',
-                reactions: {}
-            };
-
-            database.ref('messages/private/' + chatId).push(messageData);
-            database.ref('privateChats/' + chatId).update({
-                lastMessage: { text, timestamp: firebase.database.ServerValue.TIMESTAMP },
-                participants: { [currentUserId]: true, [currentChatId]: true }
-            });
-            
-            // Increment unread count for recipient
-            database.ref('privateChats/' + chatId + '/unreadCount/' + currentChatId).transaction(count => (count || 0) + 1);
-            
-            input.value = '';
-        }
-
-        function getChatId(user1, user2) {
-            return user1 < user2 ? user1 + '_' + user2 : user2 + '_' + user1;
-        }
-
-        // Render Message
-        function renderMessage(msg, chatType, messageId) {
-            const containerId = chatType === 'group' ? 'chatMessages' : 'privateChatMessages';
-            const messagesContainer = document.getElementById(containerId);
-            const messageEl = document.createElement('div');
-
-            if (msg.type === 'system') {
-                messageEl.className = 'system-message';
-                messageEl.textContent = msg.text;
-            } else {
-                const isOwn = msg.senderId === currentUserId;
-                messageEl.className = 'message' + (isOwn ? ' own' : '');
-                messageEl.dataset.messageId = messageId;
-                messageEl.dataset.chatType = chatType;
-
-                let content = '';
-                if (msg.type === 'text') {
-                    if (msg.deleted) {
-                        content = `<div class="message-bubble"><div class="message-deleted">🗑️ Сообщение удалено</div></div>`;
-                    } else {
-                        content = `<div class="message-bubble"><div class="message-text">${escapeHtml(msg.text)}</div></div>`;
-                    }
-                } else if (msg.type === 'voice') {
-                    content = `<div class="message-bubble voice-message"><audio controls src="${msg.audioUrl}"></audio></div>`;
-                } else if (msg.type === 'circle') {
-                    content = `<div class="message-bubble circle-message"><video controls src="${msg.videoUrl}"></video></div>`;
-                }
-
-                const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                
-                messageEl.innerHTML = `
-                    <div class="message-avatar">
-                        <img src="${msg.senderAvatar || availableAvatars[0]}" alt="${msg.senderName}">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">${msg.senderName}</span>
-                            <span class="message-time">${time}</span>
-                        </div>
-                        ${content}
-                        ${isOwn && !msg.deleted ? `
-                            <div class="message-actions">
-                                <button class="message-action-btn" onclick="showReactionPicker('${messageId}', '${chatType}')" title="Реакция">
-                                    <i class="far fa-smile"></i>
-                                </button>
-                                <button class="message-action-btn" onclick="promptDeleteMessage('${messageId}', '${chatType}')" title="Удалить">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        ` : ''}
-                        <div class="reaction-picker" id="reaction-${messageId}">
-                            ${reactionEmojis.map(emoji => `<span class="reaction-option" onclick="addReaction('${messageId}', '${chatType}', '${emoji}')">${emoji}</span>`).join('')}
-                        </div>
-                        ${msg.reactions ? renderReactions(msg.reactions) : ''}
-                    </div>
-                `;
-            }
-            messagesContainer.appendChild(messageEl);
-        }
-
-        function renderReactions(reactions) {
-            let html = '<div class="message-reactions">';
-            Object.entries(reactions).forEach(([emoji, users]) => {
-                if (users && users.length > 0) {
-                    const isActive = users.includes(currentUserId);
-                    html += `<div class="reaction ${isActive ? 'active' : ''}" onclick="toggleReaction('${emoji}')">
-                        <span>${emoji}</span>
-                        <span class="reaction-count">${users.length}</span>
-                    </div>`;
-                }
-            });
-            html += '</div>';
-            return html;
-        }
-
-        // Reactions
-        window.showReactionPicker = function(messageId, chatType) {
-            document.querySelectorAll('.reaction-picker').forEach(p => p.classList.remove('active'));
-            const picker = document.getElementById('reaction-' + messageId);
-            if (picker) picker.classList.add('active');
-        };
-
-        window.addReaction = function(messageId, chatType, emoji) {
-            const path = chatType === 'group' ? 'messages/group/' + messageId + '/reactions/' + emoji : 'messages/private/' + getChatId(currentUserId, currentChatId) + '/' + messageId + '/reactions/' + emoji;
-            
-            database.ref(path).transaction(reaction => {
-                if (!reaction) reaction = [];
-                if (!reaction.includes(currentUserId)) {
-                    reaction.push(currentUserId);
-                }
-                return reaction;
-            });
-            
-            document.getElementById('reaction-' + messageId).classList.remove('active');
-        };
-
-        window.toggleReaction = function(emoji) {
-            // Implementation for toggling reactions
-        };
-
-        // Delete Message
-        window.promptDeleteMessage = function(messageId, chatType) {
-            messageToDelete = { messageId, chatType };
-            document.getElementById('deleteMessageModal').classList.add('active');
-        };
-
-        function closeDeleteModal() {
-            document.getElementById('deleteMessageModal').classList.remove('active');
-            messageToDelete = null;
-        }
-
-        function deleteMessage(type) {
-            if (!messageToDelete) return;
-            
-            const { messageId, chatType } = messageToDelete;
-            const path = chatType === 'group' ? 'messages/group/' + messageId : 'messages/private/' + getChatId(currentUserId, currentChatId) + '/' + messageId;
-            
-            if (type === 'me') {
-                // Delete for me only
-                database.ref(path + '/deletedFor').transaction(deletedFor => {
-                    if (!deletedFor) deletedFor = [];
-                    if (!deletedFor.includes(currentUserId)) {
-                        deletedFor.push(currentUserId);
-                    }
-                    return deletedFor;
-                });
-            } else {
-                // Delete for everyone
-                database.ref(path).update({
-                    deleted: true,
-                    text: '',
-                    deletedBy: currentUserId,
-                    deletedAt: firebase.database.ServerValue.TIMESTAMP
-                });
-            }
-            
-            closeDeleteModal();
-            showNotification('Сообщение удалено', 'success');
-        }
-
-        // Members
-        function loadMembers() {
-            database.ref('users').once('value').then(snapshot => {
-                const membersList = document.getElementById('membersList');
-                membersList.innerHTML = '';
-                let onlineCount = 0;
-                
-                snapshot.forEach(child => {
-                    const user = child.val();
-                    if (user.online) onlineCount++;
-                    
-                    const memberItem = document.createElement('div');
-                    memberItem.className = 'member-item';
-                    memberItem.onclick = () => openPrivateChat(child.key, user);
-                    
-                    memberItem.innerHTML = `
-                        <div class="avatar animated-avatar ${user.animation || 'pulse'} ${user.online ? 'online' : ''}">
-                            <img src="${user.avatar || availableAvatars[0]}" alt="${user.name}">
-                        </div>
-                        <div class="member-info">
-                            <h4>${user.name || user.login}</h4>
-                            <p>${user.status || (user.online ? 'В сети' : 'Не в сети')}</p>
-                        </div>
-                        <span class="status">${user.online ? 'Онлайн' : 'Оффлайн'}</span>
-                    `;
-                    membersList.appendChild(memberItem);
-                });
-                
-                document.getElementById('onlineCount').textContent = onlineCount + ' участников онлайн';
-            });
-        }
-
-        // Status/Stories
-        function loadStatuses() {
-            database.ref('statuses').once('value').then(snapshot => {
-                const storiesContainer = document.getElementById('statusStories');
-                const statusList = document.getElementById('statusList');
-                storiesContainer.innerHTML = '';
-                if (statusList) statusList.innerHTML = '';
-                
-                // Add "Add status" button
-                const addStatusItem = document.createElement('div');
-                addStatusItem.className = 'status-item';
-                addStatusItem.onclick = openStatusUpload;
-                addStatusItem.innerHTML = `
-                    <div class="status-avatar-wrapper">
-                        <div class="status-avatar">
-                            <img src="${currentUser.avatar || availableAvatars[0]}" alt="Add">
-                        </div>
-                        <div class="status-add-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <span class="status-name">Мой статус</span>
-                `;
-                storiesContainer.appendChild(addStatusItem);
-                
-                snapshot.forEach(child => {
-                    const userId = child.key;
-                    const statuses = child.val();
-                    
-                    if (userId !== currentUserId && statuses && statuses.length > 0) {
-                        const latestStatus = statuses[statuses.length - 1];
-                        
-                        database.ref('users/' + userId).once('value').then(userSnap => {
-                            const userData = userSnap.val();
-                            if (userData) {
-                                // Add to stories
-                                const storyItem = document.createElement('div');
-                                storyItem.className = 'status-item';
-                                storyItem.onclick = () => viewStatus(userId, userData, statuses);
-                                storyItem.innerHTML = `
-                                    <div class="status-avatar-wrapper">
-                                        <div class="status-avatar">
-                                            <img src="${userData.avatar || availableAvatars[0]}" alt="${userData.name}">
-                                        </div>
-                                    </div>
-                                    <span class="status-name">${userData.name || userData.login}</span>
-                                `;
-                                storiesContainer.appendChild(storyItem);
-                                
-                                // Add to status list
-                                if (statusList) {
-                                    const statusItem = document.createElement('div');
-                                    statusItem.className = 'member-item';
-                                    statusItem.onclick = () => viewStatus(userId, userData, statuses);
-                                    statusItem.innerHTML = `
-                                        <div class="avatar">
-                                            <img src="${userData.avatar || availableAvatars[0]}" alt="${userData.name}">
-                                        </div>
-                                        <div class="member-info">
-                                            <h4>${userData.name || userData.login}</h4>
-                                            <p>${statuses.length} статус(ов)</p>
-                                        </div>
-                                    `;
-                                    statusList.appendChild(statusItem);
-                                }
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        function openStatusUpload() {
-            document.getElementById('statusUploadModal').classList.add('active');
-        }
-
-        function closeStatusUpload() {
-            document.getElementById('statusUploadModal').classList.remove('active');
-            document.getElementById('statusPreview').style.display = 'none';
-            document.getElementById('uploadStatus').style.display = 'none';
-            document.getElementById('statusFileInput').value = '';
-        }
-
-        function handleStatusFileSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const preview = document.getElementById('statusPreview');
-                const imagePreview = document.getElementById('statusImagePreview');
-                const videoPreview = document.getElementById('statusVideoPreview');
-                
-                preview.style.display = 'block';
-                
-                if (file.type.startsWith('image/')) {
-                    imagePreview.src = event.target.result;
-                    imagePreview.style.display = 'block';
-                    videoPreview.style.display = 'none';
-                } else if (file.type.startsWith('video/')) {
-                    videoPreview.src = event.target.result;
-                    videoPreview.style.display = 'block';
-                    imagePreview.style.display = 'none';
-                }
-                
-                document.getElementById('uploadStatus').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function uploadStatus() {
-            const fileInput = document.getElementById('statusFileInput');
-            const file = fileInput.files[0];
-            if (!file) return;
-            
-            try {
-                const reader = new FileReader();
-                reader.onload = async function(event) {
-                    const statusData = {
-                        userId: currentUserId,
-                        userName: currentUser.name || currentUser.login,
-                        userAvatar: currentUser.avatar || availableAvatars[0],
-                        type: file.type.startsWith('image/') ? 'image' : 'video',
-                        url: event.target.result,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        views: []
-                    };
-                    
-                    await database.ref('statuses/' + currentUserId).push(statusData);
-                    showNotification('Статус опубликован', 'success');
-                    closeStatusUpload();
-                    loadStatuses();
-                };
-                reader.readAsDataURL(file);
-            } catch (error) {
-                showNotification('Ошибка загрузки: ' + error.message, 'error');
-            }
-        }
-
-        function viewStatus(userId, userData, statuses) {
-            const viewer = document.getElementById('statusViewer');
-            document.getElementById('statusViewerName').textContent = userData.name || userData.login;
-            document.getElementById('statusViewerAvatar').querySelector('img').src = userData.avatar || availableAvatars[0];
-            document.getElementById('statusViewerTime').textContent = new Date().toLocaleDateString('ru-RU');
-            
-            const content = document.getElementById('statusViewerContent');
-            content.innerHTML = '';
-            
-            if (statuses && statuses.length > 0) {
-                const latest = statuses[statuses.length - 1];
-                if (latest.type === 'image') {
-                    const img = document.createElement('img');
-                    img.src = latest.url;
-                    content.appendChild(img);
-                } else {
-                    const video = document.createElement('video');
-                    video.src = latest.url;
-                    video.controls = true;
-                    video.autoplay = true;
-                    content.appendChild(video);
-                }
-            }
-            
-            viewer.classList.add('active');
-            
-            // Animate progress bar
-            const progressBar = document.getElementById('statusProgressBar');
-            progressBar.style.width = '0%';
-            setTimeout(() => progressBar.style.width = '100%', 100);
-        }
-
-        function closeStatusViewer() {
-            document.getElementById('statusViewer').classList.remove('active');
-        }
-
-        // Voice/Video Calls (WebRTC)
-        async function startCall(type) {
-            if (!currentChatId) return;
-            
-            document.getElementById('callModal').classList.add('active');
-            document.getElementById('callName').textContent = document.getElementById('privateChatName').textContent;
-            document.getElementById('callStatus').textContent = 'Звонок...';
-            
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: type === 'video',
-                    audio: true
-                });
-                
-                if (type === 'video') {
-                    document.getElementById('videoGrid').style.display = 'grid';
-                    document.getElementById('localVideo').srcObject = localStream;
-                }
-                
-                // Create peer connection
-                createPeerConnection();
-                
-                // Add local stream
-                localStream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStream);
-                });
-                
-                // Create offer
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                
-                // Send offer via Firebase
-                const callId = database.ref('calls').push().key;
-                currentCallId = callId;
-                
-                await database.ref('calls/' + callId).set({
-                    from: currentUserId,
-                    to: currentChatId,
-                    type: type,
-                    offer: offer,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    status: 'calling'
-                });
-                
-                // Listen for answer
-                database.ref('calls/' + callId).on('value', async snapshot => {
-                    const callData = snapshot.val();
-                    if (callData && callData.answer && callData.status === 'accepted') {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.answer));
-                        document.getElementById('callStatus').textContent = 'Разговор...';
-                    }
-                });
-                
-            } catch (error) {
-                showNotification('Ошибка звонка: ' + error.message, 'error');
-                endCall();
-            }
-        }
-
-        function createPeerConnection() {
-            const config = {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' }
-                ]
-            };
-            
-            peerConnection = new RTCPeerConnection(config);
-            
-            peerConnection.onicecandidate = event => {
-                if (event.candidate) {
-                    database.ref('calls/' + currentCallId + '/iceCandidates').push(event.candidate.toJSON());
-                }
-            };
-            
-            peerConnection.ontrack = event => {
-                document.getElementById('remoteVideo').srcObject = event.streams[0];
-            };
-        }
-
-        function endCall() {
-            if (currentCallId) {
-                database.ref('calls/' + currentCallId).remove();
-            }
-            
-            if (peerConnection) {
-                peerConnection.close();
-                peerConnection = null;
-            }
-            
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
-            
-            document.getElementById('callModal').classList.remove('active');
-            document.getElementById('videoGrid').style.display = 'none';
-            currentCallId = null;
-        }
-
-        function toggleMute() {
-            if (localStream) {
-                const audioTrack = localStream.getAudioTracks()[0];
-                if (audioTrack) {
-                    audioTrack.enabled = !audioTrack.enabled;
-                    document.getElementById('muteCallBtn').innerHTML = audioTrack.enabled ? 
-                        '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
-                }
-            }
-        }
-
-        // Settings
-        function openSettings() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        function toggleAvatarGrid() {
-            const grid = document.getElementById('avatarGrid');
-            if (grid.style.display === 'none') {
-                grid.innerHTML = '';
-                availableAvatars.forEach((avatar, index) => {
-                    const option = document.createElement('div');
-                    option.className = 'avatar-option';
-                    if (currentUser.avatar === avatar) option.classList.add('selected');
-                    option.innerHTML = `<img src="${avatar}" alt="Avatar ${index}">`;
-                    option.onclick = () => selectAvatar(avatar);
-                    grid.appendChild(option);
-                });
-                grid.style.display = 'grid';
-            } else {
-                grid.style.display = 'none';
-            }
-        }
-
-        function selectAvatar(avatar) {
-            document.getElementById('settingsAvatar').querySelector('img').src = avatar;
-            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-            currentUser.avatar = avatar;
-        }
-
-        async function saveSettings() {
-            const name = document.getElementById('settingsName').value.trim();
-            const status = document.getElementById('settingsStatus').value.trim();
-            const animation = document.querySelector('input[name="animation"]:checked').value;
-
-            const updates = {
-                name: name || currentUser.login,
-                status: status,
-                animation: animation,
-                avatar: currentUser.avatar
-            };
-
-            try {
-                await database.ref('users/' + currentUserId).update(updates);
-                currentUser = { ...currentUser, ...updates };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadUserData();
-                closeSettings();
-                showNotification('Настройки сохранены', 'success');
-            } catch (error) {
-                showNotification('Ошибка сохранения: ' + error.message, 'error');
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            
-            if (tab === 'chat') {
-                document.getElementById('chatTab').classList.add('active');
-                currentChatType = 'group';
-            } else if (tab === 'chats') {
-                document.getElementById('chatsTab').classList.add('active');
-                loadChats();
-            } else if (tab === 'privateChat') {
-                document.getElementById('privateChatTab').classList.add('active');
-            } else if (tab === 'members') {
-                document.getElementById('membersTab').classList.add('active');
-                loadMembers();
-            } else if (tab === 'status') {
-                document.getElementById('statusTab').classList.add('active');
-                loadStatuses();
-            }
-        }
-
-        // Voice/Circle Recording
-        function openVoiceModal() {
-            document.getElementById('voiceModal').classList.add('active');
-            document.getElementById('voicePreview').style.display = 'none';
-            document.getElementById('recordingIndicator').style.display = 'none';
-            document.getElementById('startRecording').style.display = 'block';
-            document.getElementById('stopRecording').style.display = 'none';
-        }
-
-        function closeVoiceModal() {
-            document.getElementById('voiceModal').classList.remove('active');
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-        }
-
-        async function startVoiceRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    document.getElementById('voiceAudio').src = audioUrl;
-                    document.getElementById('voicePreview').style.display = 'flex';
-                    stream.getTracks().forEach(track => track.stop());
-                };
-
-                mediaRecorder.start();
-                document.getElementById('startRecording').style.display = 'none';
-                document.getElementById('stopRecording').style.display = 'block';
-                document.getElementById('recordingIndicator').style.display = 'flex';
-
-                let seconds = 0;
-                recordingInterval = setInterval(() => {
-                    seconds++;
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    document.getElementById('recordingTime').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                }, 1000);
-            } catch (error) {
-                showNotification('Ошибка доступа к микрофону: ' + error.message, 'error');
-            }
-        }
-
-        function stopVoiceRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-            clearInterval(recordingInterval);
-            document.getElementById('recordingIndicator').style.display = 'none';
-        }
-
-        async function sendVoiceMessage() {
-            const audioEl = currentChatType === 'group' ? 
-                document.getElementById('voiceAudio') : 
-                document.getElementById('voiceAudio');
-            const audioUrl = audioEl.src;
-            if (!audioUrl) return;
-
-            try {
-                const response = await fetch(audioUrl);
-                const blob = await response.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64 = reader.result.split(',')[1];
-                    const chatPath = currentChatType === 'group' ? 'messages/group' : 'messages/private/' + getChatId(currentUserId, currentChatId);
-                    
-                    database.ref(chatPath).push({
-                        type: 'voice',
-                        audioUrl: 'data:audio/webm;base64,' + base64,
-                        senderId: currentUserId,
-                        senderName: currentUser.name || currentUser.login,
-                        senderAvatar: currentUser.avatar || availableAvatars[0],
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        chatType: currentChatType,
-                        reactions: {}
-                    });
-                    closeVoiceModal();
-                    showNotification('Голосовое сообщение отправлено', 'success');
-                };
-                reader.readAsDataURL(blob);
-            } catch (error) {
-                showNotification('Ошибка отправки: ' + error.message, 'error');
-            }
-        }
-
-        function openCircleModal() {
-            document.getElementById('circleModal').classList.add('active');
-            document.getElementById('circlePreviewResult').style.display = 'none';
-            document.getElementById('startCircle').style.display = 'block';
-            document.getElementById('stopCircle').style.display = 'none';
-        }
-
-        function closeCircleModal() {
-            document.getElementById('circleModal').classList.remove('active');
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-            }
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-        }
-
-        async function startCircleRecording() {
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('circleVideo').srcObject = videoStream;
-
-                mediaRecorder = new MediaRecorder(videoStream);
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const videoBlob = new Blob(audioChunks, { type: 'video/webm' });
-                    const videoUrl = URL.createObjectURL(videoBlob);
-                    document.getElementById('circlePreviewVideo').src = videoUrl;
-                    document.getElementById('circlePreviewResult').style.display = 'flex';
-                    videoStream.getTracks().forEach(track => track.stop());
-                };
-
-                mediaRecorder.start();
-                document.getElementById('startCircle').style.display = 'none';
-                document.getElementById('stopCircle').style.display = 'block';
-
-                let seconds = 0;
-                circleRecordingInterval = setInterval(() => {
-                    seconds++;
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    document.getElementById('circleTimer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                }, 1000);
-            } catch (error) {
-                showNotification('Ошибка доступа к камере: ' + error.message, 'error');
-            }
-        }
-
-        function stopCircleRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-            clearInterval(circleRecordingInterval);
-        }
-
-        async function sendCircleMessage() {
-            const videoEl = document.getElementById('circlePreviewVideo');
-            const videoUrl = videoEl.src;
-            if (!videoUrl) return;
-
-            try {
-                const response = await fetch(videoUrl);
-                const blob = await response.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64 = reader.result.split(',')[1];
-                    const chatPath = currentChatType === 'group' ? 'messages/group' : 'messages/private/' + getChatId(currentUserId, currentChatId);
-                    
-                    database.ref(chatPath).push({
-                        type: 'circle',
-                        videoUrl: 'data:video/webm;base64,' + base64,
-                        senderId: currentUserId,
-                        senderName: currentUser.name || currentUser.login,
-                        senderAvatar: currentUser.avatar || availableAvatars[0],
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        chatType: currentChatType,
-                        reactions: {}
-                    });
-                    closeCircleModal();
-                    showNotification('Кружочек отправлен', 'success');
-                };
-                reader.readAsDataURL(blob);
-            } catch (error) {
-                showNotification('Ошибка отправки: ' + error.message, 'error');
-            }
-        }
-
-        // Utilities
-        function addSystemMessage(chatType, text) {
-            const path = chatType === 'group' ? 'messages/group' : 'messages/private/' + chatType;
-            database.ref(path).push({
-                type: 'system',
-                text: text,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-        }
-
-        function scrollToBottom(containerId) {
-            const container = document.getElementById(containerId);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function handleTyping() {
-            const path = currentChatType === 'group' ? 'typing/group' : 'typing/private/' + getChatId(currentUserId, currentChatId);
-            database.ref(path + '/' + currentUserId).set({
-                name: currentUser.name || currentUser.login,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                database.ref(path + '/' + currentUserId).remove();
-            }, 2000);
-        }
-
-        function toggleNotifications() {
-            notificationsEnabled = !notificationsEnabled;
-            const icon = document.querySelector('#toggleNotifications i');
-            if (notificationsEnabled) {
-                icon.className = 'fas fa-bell';
-                showNotification('Уведомления включены', 'success');
-            } else {
-                icon.className = 'fas fa-bell-slash';
-                showNotification('Уведомления выключены', 'info');
-            }
-        }
-
-        function updateUserPresence() {
-            database.ref('users/' + currentUserId + '/online').set(true);
-            database.ref('users/' + currentUserId + '/online').onDisconnect().set(false);
-        }
-
-        function setupRealtimeListeners() {
-            // Group messages
-            database.ref('messages/group').on('child_added', snapshot => {
-                const msg = snapshot.val();
-                if (!msg.deletedFor || !msg.deletedFor.includes(currentUserId)) {
-                    renderMessage(msg, 'group', snapshot.key);
-                    scrollToBottom('chatMessages');
-                    if (msg.senderId !== currentUserId && notificationsEnabled && currentChatType === 'group') {
-                        showNotification(msg.senderName + ': ' + (msg.type === 'text' ? msg.text : (msg.type === 'voice' ? '🎤 Голосовое' : '🎥 Кружочек')), 'info');
-                    }
-                }
-            });
-
-            // Private messages
-            database.ref('privateChats').on('value', snapshot => {
-                snapshot.forEach(child => {
-                    const chatId = child.key;
-                    const participants = child.val().participants || {};
-                    if (participants[currentUserId]) {
-                        const otherUserId = Object.keys(participants).find(id => id !== currentUserId);
-                        database.ref('messages/private/' + chatId).on('child_added', snap => {
-                            const msg = snap.val();
-                            if (msg.senderId !== currentUserId && (!msg.deletedFor || !msg.deletedFor.includes(currentUserId))) {
-                                if (currentChatId === otherUserId) {
-                                    renderMessage(msg, 'private', snap.key);
-                                    scrollToBottom('privateChatMessages');
-                                }
-                                if (notificationsEnabled) {
-                                    showNotification('Личное сообщение', 'info');
-                                }
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Online users
-            database.ref('users').on('value', snapshot => {
-                let onlineCount = 0;
-                snapshot.forEach(child => {
-                    if (child.val().online) onlineCount++;
-                });
-                document.getElementById('onlineCount').textContent = onlineCount + ' участников онлайн';
-            });
-
-            // Typing indicator
-            database.ref('typing/group').on('value', snapshot => {
-                const typingUsers = [];
-                snapshot.forEach(child => {
-                    if (child.key !== currentUserId) {
-                        typingUsers.push(child.val().name);
-                    }
-                });
-                const indicator = document.getElementById('typingIndicator');
-                if (typingUsers.length > 0) {
-                    indicator.textContent = typingUsers.join(', ') + ' печатает...';
-                    indicator.style.display = 'inline';
-                } else {
-                    indicator.style.display = 'none';
-                }
-            });
-
-            // Incoming calls
-            database.ref('calls').orderByChild('to').equalTo(currentUserId).on('child_added', snapshot => {
-                const callData = snapshot.val();
-                if (callData && callData.from !== currentUserId && callData.status === 'calling') {
-                    handleIncomingCall(snapshot.key, callData);
-                }
-            });
-        }
-
-        async function handleIncomingCall(callId, callData) {
-            if (confirm(`Входящий ${callData.type === 'video' ? 'видео' : 'аудио'}звонок от ${callData.from}! Принять?`)) {
-                currentCallId = callId;
-                document.getElementById('callModal').classList.add('active');
-                
-                try {
-                    localStream = await navigator.mediaDevices.getUserMedia({
-                        video: callData.type === 'video',
-                        audio: true
-                    });
-                    
-                    if (callData.type === 'video') {
-                        document.getElementById('videoGrid').style.display = 'grid';
-                        document.getElementById('localVideo').srcObject = localStream;
-                    }
-                    
-                    createPeerConnection();
-                    
-                    localStream.getTracks().forEach(track => {
-                        peerConnection.addTrack(track, localStream);
-                    });
-                    
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    
-                    await database.ref('calls/' + callId).update({
-                        answer: answer,
-                        status: 'accepted'
-                    });
-                    
-                    document.getElementById('callStatus').textContent = 'Разговор...';
-                    
-                } catch (error) {
-                    showNotification('Ошибка звонка: ' + error.message, 'error');
-                    endCall();
-                }
-            } else {
-                database.ref('calls/' + callId).remove();
-            }
-        }
-
-        function showNotification(message, type = 'info') {
-            const container = document.getElementById('notifications');
-            const notification = document.createElement('div');
-            notification.className = 'notification ' + type;
-            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-            notification.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-            container.appendChild(notification);
+        });
+
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
             setTimeout(() => {
-                notification.style.animation = 'notificationSlide 0.3s ease-out reverse';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
+                toast.classList.remove('show');
+            }, 4000);
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        window.addEventListener('beforeunload', () => {
-            if (currentUserId) {
-                database.ref('users/' + currentUserId + '/online').set(false);
+        function loadProducts() {
+            const grid = document.getElementById('productsGrid');
+            
+            if (!db) {
+                grid.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Нет подключения к базе данных. Попробуйте позже.</p>
+                    </div>
+                `;
+                return;
             }
+
+            db.ref('products').on('value', (snapshot) => {
+                const products = snapshot.val();
+                grid.innerHTML = '';
+
+                if (!products) {
+                    grid.innerHTML = `
+                        <div class="no-products">
+                            <i class="fas fa-box-open"></i>
+                            <p>Товары скоро появятся. Следите за обновлениями!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                Object.keys(products).forEach(key => {
+                    const product = products[key];
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="product-image" onclick="openProductDetail('${key}')">
+                            <img src="${product.image || 'https://via.placeholder.com/400x350/1a1a1a/d4af37?text=CymkiBY'}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/400x350/1a1a1a/d4af37?text=CymkiBY'">
+                            ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <h3 onclick="openProductDetail('${key}')" style="cursor: pointer;">${product.name}</h3>
+                            <p class="description">${product.description || 'Описание скоро будет добавлено'}</p>
+                            <div class="product-price">
+                                ${product.price || '0'} <span class="currency">${product.currency || '₽'}</span>
+                            </div>
+                            <button class="btn-view" onclick="openProductDetail('${key}')">
+                                <i class="fas fa-eye"></i> Подробнее
+                            </button>
+                            <button class="btn-buy" onclick="openOrderModal('${key}', '${product.name.replace(/'/g, "\\'")}', '${product.price || 0}')">
+                                <i class="fas fa-shopping-bag"></i> Приобрести сумку
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }, (error) => {
+                console.error('Error loading products:', error);
+                grid.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Ошибка загрузки товаров. Попробуйте позже.</p>
+                    </div>
+                `;
+            });
+        }
+
+        let currentOrderProduct = {};
+
+        function openProductDetail(productId) {
+            if (!db) {
+                showToast('База данных недоступна', 'error');
+                return;
+            }
+
+            db.ref('products/' + productId).once('value')
+                .then((snapshot) => {
+                    const product = snapshot.val();
+                    if (!product) return;
+
+                    document.getElementById('detailImage').src = product.image || 'https://via.placeholder.com/400x350/1a1a1a/d4af37?text=CymkiBY';
+                    document.getElementById('detailImage').alt = product.name;
+                    document.getElementById('detailTitle').textContent = product.name;
+                    document.getElementById('detailPrice').textContent = `${product.price || '0'} ${product.currency || '₽'}`;
+                    document.getElementById('detailDescription').textContent = product.description || 'Описание скоро будет добавлено';
+                    
+                    const badgeDiv = document.getElementById('detailBadge');
+                    if (product.badge) {
+                        badgeDiv.innerHTML = `<span class="product-detail-badge">${product.badge}</span>`;
+                    } else {
+                        badgeDiv.innerHTML = '';
+                    }
+
+                    currentProductForOrder = {
+                        id: productId,
+                        name: product.name,
+                        price: product.price
+                    };
+
+                    document.getElementById('productDetailModal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                })
+                .catch((error) => {
+                    console.error('Error loading product:', error);
+                    showToast('Ошибка загрузки товара', 'error');
+                });
+        }
+
+        function buyFromDetail() {
+            closeModal('productDetailModal');
+            if (currentProductForOrder) {
+                setTimeout(() => {
+                    openOrderModal(currentProductForOrder.id, currentProductForOrder.name, currentProductForOrder.price);
+                }, 300);
+            }
+        }
+
+        function openSupportModal() {
+            document.getElementById('supportModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openOrderModal(productId, productName, productPrice) {
+            currentOrderProduct = { id: productId, name: productName, price: productPrice };
+            
+            document.getElementById('orderProductId').value = productId;
+            document.getElementById('orderProductName').value = productName;
+            document.getElementById('orderProductPrice').value = productPrice;
+
+            document.getElementById('orderProductInfo').innerHTML = `
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="flex:1;">
+                        <div style="font-size:1.1rem; font-weight:600;">${productName}</div>
+                        <div style="color:var(--gold); font-size:1.3rem; font-weight:700; margin-top:5px;">${productPrice} ₽</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('orderForm').reset();
+            document.getElementById('deliveryGroup').style.display = 'none';
+            document.getElementById('orderModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        function updateDelivery() {
+            const country = document.getElementById('country').value;
+            const deliveryGroup = document.getElementById('deliveryGroup');
+            const deliverySelect = document.getElementById('delivery');
+
+            if (!country) {
+                deliveryGroup.style.display = 'none';
+                return;
+            }
+
+            deliveryGroup.style.display = 'block';
+            deliverySelect.innerHTML = '<option value="">Выберите службу доставки</option>';
+
+            if (country === 'russia') {
+                deliverySelect.innerHTML += '<option value="CDEK">CDEK</option>';
+                deliverySelect.innerHTML += '<option value="Почта России">Почта России</option>';
+                deliverySelect.innerHTML += '<option value="BoxBerry">BoxBerry</option>';
+            } else if (country === 'usa') {
+                deliverySelect.innerHTML += '<option value="American Express">American Express</option>';
+            }
+        }
+
+        function submitOrder() {
+            if (!db) {
+                showToast('База данных недоступна. Попробуйте позже.', 'error');
+                return;
+            }
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const country = document.getElementById('country').value;
+            const delivery = document.getElementById('delivery').value;
+            const address = document.getElementById('address').value.trim();
+            const comment = document.getElementById('comment').value.trim();
+
+            if (!fullName || !email || !phone || !country || !delivery || !address) {
+                showToast('Пожалуйста, заполните все обязательные поля!', 'error');
+                return;
+            }
+
+            if (fullName.length < 5) {
+                showToast('Введите полное ФИО!', 'error');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Введите корректный email!', 'error');
+                return;
+            }
+
+            if (phone.length < 10) {
+                showToast('Введите корректный номер телефона!', 'error');
+                return;
+            }
+
+            const trackNumber = 'CBY-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+
+            const orderData = {
+                productId: currentOrderProduct.id,
+                productName: currentOrderProduct.name,
+                productPrice: currentOrderProduct.price,
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                country: country,
+                delivery: delivery,
+                address: address,
+                comment: comment,
+                trackNumber: trackNumber,
+                status: 'Оформлен',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                completed: false
+            };
+
+            const btn = document.getElementById('submitOrder');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Оформление...';
+
+            db.ref('orders').push(orderData)
+                .then(() => {
+                    console.log('✅ Заказ сохранён в Firebase');
+                    
+                    const templateParams = {
+                        email: email,
+                        to_name: fullName,
+                        product_name: currentOrderProduct.name,
+                        product_price: currentOrderProduct.price,
+                        track_number: trackNumber
+                    };
+
+                    console.log('📧 Отправка письма...', templateParams);
+
+                    return emailjs.send('service_te8y96q', 'template_k9c9rb2', templateParams)
+                        .then((response) => {
+                            console.log('✅ Письмо отправлено!', response.status, response.text);
+                            return response;
+                        })
+                        .catch((emailError) => {
+                            console.error('❌ Ошибка отправки email:', emailError);
+                            throw emailError;
+                        });
+                })
+                .then(() => {
+                    closeModal('orderModal');
+                    document.getElementById('successTrackNumber').textContent = trackNumber;
+                    document.getElementById('successModal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    showToast('Заказ успешно оформлен! Письмо отправлено на ' + email, 'success');
+                    document.getElementById('orderForm').reset();
+                })
+                .catch((error) => {
+                    console.error('❌ Ошибка:', error);
+                    showToast('Ошибка: ' + (error.text || error.message || 'Неизвестная ошибка'), 'error');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Забронировать сумку';
+                });
+        }
+
+        function trackOrder() {
+            if (!db) {
+                showToast('База данных недоступна', 'error');
+                return;
+            }
+
+            const trackInput = document.getElementById('trackInput').value.trim();
+            const resultDiv = document.getElementById('trackingResult');
+            const statusDiv = document.getElementById('trackingStatus');
+
+            if (!trackInput) {
+                showToast('Введите трек-номер!', 'error');
+                return;
+            }
+
+            resultDiv.classList.remove('active');
+            statusDiv.innerHTML = '<p style="text-align:center; color:var(--gray);"><span class="spinner" style="border-color:rgba(212,175,55,0.3); border-top-color:var(--gold);"></span> Поиск...</p>';
+            resultDiv.classList.add('active');
+
+            db.ref('orders').orderByChild('trackNumber').equalTo(trackInput).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const orders = snapshot.val();
+                        const order = Object.values(orders)[0];
+                        displayTrackingStatus(order, statusDiv);
+                    } else {
+                        return db.ref('completed_orders').orderByChild('trackNumber').equalTo(trackInput).once('value');
+                    }
+                })
+                .then((snapshot) => {
+                    if (snapshot && snapshot.exists()) {
+                        const orders = snapshot.val();
+                        const order = Object.values(orders)[0];
+                        displayTrackingStatus(order, statusDiv, true);
+                    } else if (snapshot) {
+                        statusDiv.innerHTML = `
+                            <h4><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> Заказ не найден</h4>
+                            <p style="color:var(--gray); margin-top:10px;">Проверьте правильность трек-номера и попробуйте снова.</p>
+                        `;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Tracking error:', error);
+                    statusDiv.innerHTML = `
+                        <h4><i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> Ошибка</h4>
+                        <p style="color:var(--gray); margin-top:10px;">Не удалось найти заказ. Попробуйте позже.</p>
+                    `;
+                });
+        }
+
+        function displayTrackingStatus(order, container, isCompleted = false) {
+            const statuses = [
+                'Оформлен',
+                'В сборке',
+                'Отправлен в российскую федерацию',
+                'Принят в российской федерации',
+                'Отправлен клиенту'
+            ];
+
+            const currentStatusIndex = statuses.indexOf(order.status);
+
+            let timelineHtml = '';
+            statuses.forEach((status, index) => {
+                let className = '';
+                if (isCompleted || index < currentStatusIndex) {
+                    className = 'completed';
+                } else if (index === currentStatusIndex) {
+                    className = 'current';
+                }
+                timelineHtml += `
+                    <div class="status-step ${className}">
+                        <i class="fas ${index <= currentStatusIndex || isCompleted ? 'fa-check-circle' : 'fa-circle'}" style="margin-right:8px; font-size:0.8rem;"></i>
+                        ${status}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <h4><i class="fas fa-box"></i> Заказ: ${order.productName}</h4>
+                <p style="color:var(--gray); margin-bottom:5px;">Трек-номер: <span style="color:var(--gold); font-weight:600;">${order.trackNumber}</span></p>
+                <p style="color:var(--gray); margin-bottom:20px;">Статус: <span style="color:${isCompleted ? 'var(--success)' : 'var(--gold)'}; font-weight:600;">${isCompleted ? 'Доставлен' : order.status}</span></p>
+                <div class="status-timeline">
+                    ${timelineHtml}
+                </div>
+                ${isCompleted ? '<p style="margin-top:20px; color:var(--success); font-weight:600;"><i class="fas fa-check-circle"></i> Заказ успешно доставлен!</p>' : ''}
+            `;
+        }
+
+        document.getElementById('trackInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') trackOrder();
+        });
+
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value[0] === '7' || value[0] === '8') {
+                    value = value.substring(0, 11);
+                    let formatted = '+7';
+                    if (value.length > 1) formatted += ' (' + value.substring(1, 4);
+                    if (value.length > 4) formatted += ') ' + value.substring(4, 7);
+                    if (value.length > 7) formatted += '-' + value.substring(7, 9);
+                    if (value.length > 9) formatted += '-' + value.substring(9, 11);
+                    e.target.value = formatted;
+                }
+            }
+        });
+
+        loadProducts();
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.about-card, .product-card, .stat-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
         });
     </script>
 </body>
