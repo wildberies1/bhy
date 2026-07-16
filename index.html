@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Меню ресторана</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .search-container {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 18px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .menu-item-content {
+            padding: 25px;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .menu-item-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: #1a1a2e;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .menu-item-code {
+            font-size: 0.75rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .menu-item-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #667eea;
+            white-space: nowrap;
+        }
+
+        .menu-item-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #f0f4ff;
+            color: #667eea;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .item-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px 25px 0 0;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .add-to-order-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .add-to-order-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Меню ресторана</h1>
+            <p class="subtitle">Выберите блюда для заказа</p>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Поиск блюд и напитков...">
+            </div>
+            
+            <div class="categories" id="categories">
+                <button class="category-btn active" data-category="all">Все</button>
+                <button class="category-btn" data-category="sushi">Суши и роллы</button>
+                <button class="category-btn" data-category="alcohol">Алкоголь</button>
+                <button class="category-btn" data-category="food">Горячие блюда</button>
+                <button class="category-btn" data-category="salads">Салаты</button>
+                <button class="category-btn" data-category="soup">Супы</button>
+                <button class="category-btn" data-category="burgers">Бургеры</button>
+                <button class="category-btn" data-category="pizza">Пицца</button>
+                <button class="category-btn" data-category="drinks">Напитки</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Загрузка меню...</p>
+        </div>
+
+        <div class="menu-grid" id="menuGrid"></div>
+        
+        <div class="no-results" id="noResults">
+            😔 Ничего не найдено
+        </div>
+    </div>
+
+    <div class="item-modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">Название блюда</h2>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            databaseURL: "https://bank-app-9182e-default-rtdb.firebaseio.com/"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Menu items data
+        const menuItems = [
+            // Sushi
+            { id: '00366', name: 'Суши Угорь', price: 170, category: 'sushi', icon: '' },
+            { id: '00365', name: 'Суши Тунец', price: 150, category: 'sushi', icon: '🍣' },
+            { id: '00364', name: 'Суши Лосось', price: 140, category: 'sushi', icon: '🍣' },
+            
+            // Rolls
+            { id: '00377', name: 'Ролл Аляска', price: 990, category: 'sushi', icon: '🍱' },
+            { id: '00376', name: 'Ролл Канада', price: 790, category: 'sushi', icon: '🍱' },
+            { id: '00379', name: 'Ролл Калифорния', price: 650, category: 'sushi', icon: '🍱' },
+            { id: '00369', name: 'Ролл Филадельфия', price: 790, category: 'sushi', icon: '🍱' },
+            { id: '00374', name: 'Ролл Темпура', price: 690, category: 'sushi', icon: '' },
+            
+            // Alcohol - Strong
+            { id: '00429', name: 'Bombay Sapphire 50 мл', price: 490, category: 'alcohol', icon: '🍸' },
+            { id: '00428', name: 'Absolut Vodka 50 мл', price: 290, category: 'alcohol', icon: '🍸' },
+            { id: '00427', name: 'Hennessy VS 50 мл', price: 890, category: 'alcohol', icon: '🥃' },
+            { id: '00426', name: 'Jameson 50 мл', price: 590, category: 'alcohol', icon: '🥃' },
+            { id: '00425', name: "Jack Daniel's 50 мл", price: 650, category: 'alcohol', icon: '🥃' },
+            
+            // Alcohol - Beer
+            { id: '00421', name: 'Guinness', price: 590, category: 'alcohol', icon: '🍺' },
+            { id: '00420', name: 'Hoegaarden', price: 450, category: 'alcohol', icon: '🍺' },
+            { id: '00419', name: 'Балтика 7', price: 320, category: 'alcohol', icon: '🍺' },
+            { id: '00418', name: 'Жигулёвское', price: 280, category: 'alcohol', icon: '🍺' },
+            
+            // Alcohol - Wine
+            { id: '00424', name: 'Просекко', price: 620, category: 'alcohol', icon: '🥂' },
+            { id: '00423', name: 'Каберне Совиньон', price: 540, category: 'alcohol', icon: '🍷' },
+            { id: '00422', name: 'Шардоне', price: 490, category: 'alcohol', icon: '🍷' },
+            
+            // Cocktails
+            { id: '00434', name: 'Космополитен', price: 620, category: 'alcohol', icon: '🍹' },
+            { id: '00433', name: 'Маргарита', price: 620, category: 'alcohol', icon: '🍹' },
+            { id: '00432', name: 'Апероль Шприц', price: 690, category: 'alcohol', icon: '🍹' },
+            { id: '00431', name: 'Пина Колада', price: 650, category: 'alcohol', icon: '' },
+            
+            // Hot food - Starters
+            { id: '00338', name: 'Моцарелла стики', price: 390, category: 'food', icon: '🧀' },
+            { id: '00337', name: 'Крылышки BBQ', price: 470, category: 'food', icon: '🍗' },
+            { id: '00336', name: 'Начос с сырным соусом', price: 390, category: 'food', icon: '' },
+            { id: '00335', name: 'Чесночные гренки', price: 230, category: 'food', icon: '' },
+            { id: '00334', name: 'Креветки темпура', price: 590, category: 'food', icon: '🍤' },
+            { id: '00333', name: 'Куриные нагетсы', price: 330, category: 'food', icon: '🍗' },
+            { id: '00332', name: 'Сырные палочки', price: 340, category: 'food', icon: '🧀' },
+            { id: '00331', name: 'Луковые кольца', price: 260, category: 'food', icon: '🧅' },
+            { id: '00330', name: 'Картофель по-деревенски', price: 240, category: 'food', icon: '' },
+            { id: '00329', name: 'Картофель фри', price: 220, category: 'food', icon: '🍟' },
+            
+            // Hot food - Main dishes
+            { id: '00385', name: 'Форель на гриле', price: 1190, category: 'food', icon: '' },
+            { id: '00384', name: 'Лосось на гриле', price: 1290, category: 'food', icon: '🐟' },
+            { id: '00383', name: 'Бефстроганов', price: 890, category: 'food', icon: '🥩' },
+            { id: '00382', name: 'Свинина BBQ', price: 760, category: 'food', icon: '🍖' },
+            { id: '00381', name: 'Куриный стейк', price: 620, category: 'food', icon: '🍗' },
+            { id: '00380', name: 'Стейк Нью-Йорк', price: 1890, category: 'food', icon: '🥩' },
+            { id: '00379b', name: 'Стейк Рибай', price: 2190, category: 'food', icon: '' },
+            
+            // Burgers
+            { id: '00393', name: 'Двойной бургер', price: 790, category: 'burgers', icon: '🍔' },
+            { id: '00392', name: 'Бургер с курицей', price: 520, category: 'burgers', icon: '🍔' },
+            { id: '00391', name: 'BBQ Бургер', price: 640, category: 'burgers', icon: '🍔' },
+            { id: '00390', name: 'Биг Бургер', price: 690, category: 'burgers', icon: '' },
+            { id: '00389', name: 'Чизбургер', price: 490, category: 'burgers', icon: '🍔' },
+            
+            // Pasta & Risotto
+            { id: '00388', name: 'Ризотто с грибами', price: 690, category: 'food', icon: '' },
+            { id: '00386', name: 'Паста Карбонара', price: 620, category: 'food', icon: '🍝' },
+            
+            // Pizza
+            { id: '00363', name: 'Пицца Морская', price: 990, category: 'pizza', icon: '🍕' },
+            { id: '00362', name: 'Пицца Ветчина и грибы', price: 790, category: 'pizza', icon: '🍕' },
+            { id: '00361', name: 'Пицца Дьябло', price: 790, category: 'pizza', icon: '🍕' },
+            { id: '00360', name: 'Пицца Мясная', price: 890, category: 'pizza', icon: '' },
+            { id: '00356', name: 'Пицца 4 Сыра', price: 790, category: 'pizza', icon: '🍕' },
+            { id: '00355', name: 'Пицца Пепперони', price: 690, category: 'pizza', icon: '' },
+            { id: '00354', name: 'Пицца Маргарита', price: 590, category: 'pizza', icon: '🍕' },
+            
+            // Salads
+            { id: '00348', name: 'Салат с ростбифом', price: 670, category: 'salads', icon: '' },
+            { id: '00347', name: 'Овощной салат', price: 340, category: 'salads', icon: '🥗' },
+            { id: '00346', name: 'Коул Слоу', price: 260, category: 'salads', icon: '' },
+            { id: '00345', name: 'Капрезе', price: 520, category: 'salads', icon: '🥗' },
+            { id: '00344', name: 'Салат с лососем', price: 690, category: 'salads', icon: '🥗' },
+            { id: '00343', name: 'Тёплый салат с говядиной', price: 590, category: 'salads', icon: '🥗' },
+            { id: '00342', name: 'Оливье', price: 390, category: 'salads', icon: '🥗' },
+            { id: '00340', name: 'Цезарь с креветками', price: 620, category: 'salads', icon: '🥗' },
+            { id: '00339', name: 'Цезарь с курицей', price: 490, category: 'salads', icon: '' },
+            
+            // Soups
+            { id: '00352', name: 'Крем-суп грибной', price: 390, category: 'soup', icon: '🍲' },
+            { id: '00353', name: 'Том Ям', price: 790, category: 'soup', icon: '🍜' },
+            { id: '00350', name: 'Солянка', price: 490, category: 'soup', icon: '🍲' },
+            { id: '00351', name: 'Куриный суп', price: 350, category: 'soup', icon: '🍲' },
+            
+            // Coffee
+            { id: '00402', name: 'Капучино', price: 290, category: 'drinks', icon: '☕' },
+            { id: '00404', name: 'Раф', price: 360, category: 'drinks', icon: '☕' },
+            { id: '00403', name: 'Латте', price: 320, category: 'drinks', icon: '☕' },
+            { id: '00400', name: 'Эспрессо', price: 180, category: 'drinks', icon: '☕' },
+            
+            // Tea
+            { id: '00409', name: 'Ягодный чай', price: 390, category: 'drinks', icon: '🍵' },
+            { id: '00407', name: 'Облепиховый чай', price: 390, category: 'drinks', icon: '🍵' },
+            { id: '00408', name: 'Имбирный чай', price: 390, category: 'drinks', icon: '🍵' },
+            { id: '00406', name: 'Зелёный чай', price: 250, category: 'drinks', icon: '🍵' },
+            { id: '00405', name: 'Чёрный чай', price: 250, category: 'drinks', icon: '🍵' },
+            
+            // Soft drinks
+            { id: '00416', name: 'Домашний лимонад', price: 190, category: 'drinks', icon: '🥤' },
+            { id: '00415', name: 'Минеральная вода', price: 190, category: 'drinks', icon: '💧' },
+            { id: '00414', name: 'Морс', price: 220, category: 'drinks', icon: '' },
+            { id: '00413', name: 'Сок Rich', price: 260, category: 'drinks', icon: '🧃' },
+            { id: '00410', name: 'Coca-Cola 0,5 л', price: 220, category: 'drinks', icon: '🥤' }
+        ];
+
+        let currentCategory = 'all';
+        let searchTerm = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            setupEventListeners();
+            saveToFirebase();
+        });
+
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                renderMenu();
+            });
+
+            // Categories
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentCategory = e.target.dataset.category;
+                    renderMenu();
+                });
+            });
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const noResults = document.getElementById('noResults');
+            const loading = document.getElementById('loading');
+            
+            loading.style.display = 'none';
+            
+            let filtered = menuItems.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesSearch = item.name.toLowerCase().includes(searchTerm) || 
+                                    item.id.includes(searchTerm);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            grid.innerHTML = filtered.map(item => `
+                <div class="menu-item" onclick="showItemDetails('${item.id}')">
+                    <div class="menu-item-image">${item.icon}</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <div>
+                                <div class="menu-item-title">${item.name}</div>
+                                <div class="menu-item-code">Код: ${item.id}</div>
+                            </div>
+                            <div class="menu-item-price">${item.price} ₽</div>
+                        </div>
+                        <span class="menu-item-category">${getCategoryName(item.category)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                'sushi': 'Суши и роллы',
+                'alcohol': 'Алкоголь',
+                'food': 'Горячие блюда',
+                'salads': 'Салаты',
+                'soup': 'Супы',
+                'burgers': 'Бургеры',
+                'pizza': 'Пицца',
+                'drinks': 'Напитки'
+            };
+            return categories[category] || category;
+        }
+
+        function showItemDetails(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            const modal = document.getElementById('itemModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            modalTitle.textContent = item.name;
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Код товара</span>
+                    <span class="detail-value">${item.id}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Категория</span>
+                    <span class="detail-value">${getCategoryName(item.category)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Цена</span>
+                    <span class="detail-value" style="color: #667eea; font-size: 1.3rem;">${item.price} ₽</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Иконка</span>
+                    <span class="detail-value" style="font-size: 2rem;">${item.icon}</span>
+                </div>
+                <button class="add-to-order-btn" onclick="addToOrder('${item.id}')">
+                    Добавить в заказ
+                </button>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+        }
+
+        function addToOrder(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            const order = {
+                itemId: item.id,
+                name: item.name,
+                price: item.price,
+                timestamp: Date.now(),
+                status: 'pending'
+            };
+
+            // Save to Firebase
+            database.ref('orders').push(order)
+                .then(() => {
+                    alert(`✅ ${item.name} добавлен в заказ!`);
+                    closeModal();
+                })
+                .catch(error => {
+                    console.error('Error adding order:', error);
+                    alert('Ошибка при добавлении в заказ');
+                });
+        }
+
+        function saveToFirebase() {
+            // Save menu items to Firebase
+            database.ref('menu').set(menuItems)
+                .then(() => console.log('Menu saved to Firebase'))
+                .catch(error => console.error('Error saving menu:', error));
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('itemModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
